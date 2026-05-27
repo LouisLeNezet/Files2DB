@@ -10,7 +10,8 @@ on:
       - dev
 
 jobs:
-  All unit tests:
+  test:
+    name: Run all unittests and generate coverage report
     runs-on: ubuntu-latest
     strategy:
       matrix:
