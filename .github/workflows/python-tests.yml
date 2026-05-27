@@ -12,6 +12,7 @@ on:
 
 jobs:
   test:
+    name: Run all unittests and generate coverage report
     runs-on: ubuntu-latest
     strategy:
       matrix:
