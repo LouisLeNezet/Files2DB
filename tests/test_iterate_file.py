@@ -37,6 +37,7 @@ class TestValidateFiles(unittest.TestCase):
             "ColD",
             "Author",
             "DateFileCreation",
+            "ColE",
             "FileName",
         ]
         for col in columns_expected:
