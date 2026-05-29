@@ -26,6 +26,12 @@ readme = "README.md"
 [project.scripts]
 files2db = "files2db.cli:app"
 
+[project.optional-dependencies]
+docs = [
+  "mkdocs-material",
+  "mkdocstrings[python]"
+]
+
 [tool.setuptools.packages.find]
 include = ["files2db*"]
 

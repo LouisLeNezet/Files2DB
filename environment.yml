@@ -18,3 +18,5 @@ dependencies:
   - pip
   - ruff
   - pre-commit
+  - mkdocs
+  - mkdocstrings

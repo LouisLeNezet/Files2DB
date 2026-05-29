@@ -1,0 +1,28 @@
+site_name: files2db
+site_description: Documentation for files2db
+site_url: https://louislenezet.github.io/files2db
+
+theme:
+  name: readthedocs
+
+plugins:
+  - search
+  - mkdocstrings:
+      handlers:
+        python:
+          paths: [.]
+
+markdown_extensions:
+  - toc:
+      permalink: true
+
+nav:
+  - Home: index.md
+  - Installation: installation.md
+  - Quickstart: quickstart.md
+  - CLI: cli.md
+  - API:
+      - Main: api/main.md
+      - Read File: api/read_file.md
+      - Data Management: api/data_mg.md
+      - Data Process: api/data_process.md

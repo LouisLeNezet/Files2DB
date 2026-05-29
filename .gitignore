@@ -4,3 +4,5 @@ DataGenerated
 coverage.lcov
 lcov.info
 .vscode
+site/
+files2db.egg-info/
