@@ -41,7 +41,6 @@ class TestCLI(unittest.TestCase):
 
     @patch("files2db.cli.main")
     def test_main_called(self, mock_main):
-
         result = runner.invoke(
             app,
             [

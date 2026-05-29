@@ -1,6 +1,6 @@
 site_name: files2db
 site_description: Documentation for files2db
-site_url: https://louislenezet.github.io/files2db
+site_url: https://louislenezet.github.io/files2db/
 
 theme:
   name: readthedocs

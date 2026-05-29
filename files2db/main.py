@@ -56,7 +56,7 @@ def main(
 ):
     """
     Main function to concatenate files and normalize data if needed.
-    
+
     Parameters
     ----------
     path : str
@@ -67,22 +67,22 @@ def main(
         The folder where the output files will be saved.
     output_files_prefix : str
         The prefix for the output files.
-        
+
     Returns
     -------
     all_data_raw : pd.DataFrame
         The concatenated raw data.
     all_data : pd.DataFrame or None
         The normalized data if normalize is True, otherwise None.
-    
+
     Raises
     ------
     FileNotFoundError
         If one or more files specified in the organization file cannot be found.
-        
+
     Exception
         If an error occurs while iterating through the files.
-    
+
     Notes
     -----
     - The function first loads the organization file and retrieves the
