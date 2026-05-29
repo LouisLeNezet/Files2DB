@@ -85,15 +85,19 @@ def main(
     
     Notes
     -----
-    - The function first loads the organization file and retrieves the database information.
+    - The function first loads the organization file and retrieves the
+    database information.
     - It then checks if all files specified in the organization file exist.
-    - If all files exist, it iterates through the files and concatenates the data.
-    - If normalization is requested, it normalizes the data according to the rules specified in the organization file.
+    - If all files exist, it iterates through the files and concatenates the
+    data.
+    - If normalization is requested, it normalizes the data according to the
+    rules specified in the organization file.
     - Finally, it saves the raw and normalized data to the specified output folder.
 
     Example
     -------
-    >>> main(path="path/to/orga_file.xlsx", normalize=True, output_folder="output", output_files_prefix="data")
+    >>> main(path="path/to/orga_file.xlsx", normalize=True, output_folder="output",
+    ... output_files_prefix="data")
     """
     start()
     db_orga = load_file_orga()
