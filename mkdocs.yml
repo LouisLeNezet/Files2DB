@@ -15,6 +15,7 @@ plugins:
 markdown_extensions:
   - toc:
       permalink: true
+  - pymdownx.snippets
 
 nav:
   - Home: index.md
