@@ -23,7 +23,7 @@
       </ul>
     </td>
     <td style="text-align:right;">
-      <img src="assets/logo_files2db.png" alt="Files2DB Logo" height="100%"/>
+      <img src="docs/assets/logo_files2db.png" alt="Files2DB Logo" height="100%"/>
     </td>
   </tr>
 </table>
