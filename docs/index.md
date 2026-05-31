@@ -1,22 +1,14 @@
 [![Python Version](https://img.shields.io/badge/python-3.13%2B-blue.svg)](https://www.python.org/downloads/) [![codecov](https://codecov.io/gh/louislenezet/files2db/branch/dev/graph/badge.svg)](https://codecov.io/gh/louislenezet/files2db) [![License](https://img.shields.io/badge/license-GPLv3-green.svg)](https://opensource.org/licenses/gpl-3-0)
 
+<div align="center">
+  <img src="assets/logo_files2db.svg" width="250">
+</div>
+
 # Files2DB
 
-<table>
-  <tr>
-    <td>
-      <p>
-        <i>One script to rule them all, one script to find them, one script to norm them all and in a database bind them.</i>
-      </p>
-      <p>
-        <strong>files2db</strong> is a python tool to help anyone concatenate, normalize and check a multitude of flat plain files (.csv, .xlsx) into a single, standardized database.
-      </p>
-    </td>
-    <td style="text-align:right;">
-      <img src="assets/logo_files2db.png" alt="Files2DB Logo" height="100%"/>
-    </td>
-  </tr>
-</table>
+> One script to rule them all, one script to find them, one script to standardize them all and in a database bind them.
+
+`files2db` is a python tool to help anyone concatenate, normalize and check a multitude of flat plain files (`.csv`, `.xlsx`) into a single, standardized database.
 
 ## Problematic and objectives
 
