@@ -6,7 +6,7 @@
 
 # Files2DB
 
-> One script to rule them all, one script to find them, one script to standardize them all and in a database bind them.
+> _One script to rule them all, one script to find them, one script to standardize them all and in a database bind them._
 
 `files2db` is a python tool to help anyone concatenate, normalize and check a multitude of flat plain files (`.csv`, `.xlsx`) into a single, standardized database.
 
