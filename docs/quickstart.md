@@ -34,22 +34,23 @@ You therefore need the following columns:
 
 ### _FieldsRules_ table
 
-This file contains the different rules needed to normalize each variable in the aggregated data
+This file contains the different rules needed to normalize each variable in the aggregated data.
+More information on the different rules can be found in the [documentation](https://files2db.readthedocs.io/en/latest/normalization.html#normalisation).
 
-- `Field`
-- `Category`
-- `Sep`
-- `DelMatch`
-- `DelEnd`
-- `DelIn`
-- `DelStart`
-- `StripFrom`
-- `DataType`
-- `Contains`
-- `Min`
-- `Max`
-- `SepPattern`
-- `KeepLink`
+- `Field`: name of the field to normalize
+- `Category`: name of the field category
+- `Sep`: character used to separate the modalities in the field (e.g. `,`, `;`, `\t`, ` `)
+- `SepPattern`: regular expression pattern to separate the modalities in the field
+- `KeepLink`: a boolean value telling if the link to the original data should be kept after separating the modalities in the field
+- `DelMatch`: a regular expression pattern to delete in the field (fully match)
+- `DelEnd`: a regular expression pattern to delete at the end of the field
+- `DelIn`: a regular expression pattern to delete in the field (partially match)
+- `DelStart`: a regular expression pattern to delete at the start of the field
+- `StripFrom`: a regular expression pattern to strip from the field (fully match)
+- `DataType`: the data type to assign to the field (e.g. `str`, `int`, `float`, `date`)
+- `Contains`: a regular expression pattern to check if the field contains a specific value
+- `Min`: the minimum value for the field (if applicable)
+- `Max`: the maximum value for the field (if applicable)
 
 {{ read_csv('assets/field_rules.csv', sep=";") }}
 

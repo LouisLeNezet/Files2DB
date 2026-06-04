@@ -31,7 +31,8 @@ docs = [
   "mkdocs-material",
   "mkdocstrings[python]",
   "pymdown-extensions",
-  "mkdocs-autorefs"
+  "mkdocs-autorefs",
+  "mkdocs-table-reader-plugin"
 ]
 
 [tool.setuptools.packages.find]
