@@ -61,7 +61,7 @@ To run `files2db`, you need three different tables:
 These tables can be in CSV or Excel format, and they should be structured as follows:
 
 - The file list table should have the following columns: `FilePath`, `SheetName`, `LineStart`, `LineEnd`, `Header`, `ColStart`, `ColEnd`, `ToAdd`, `AsCorrection`, `Separator`
-- The field mapping table should have the following columns: `Field`, `Eq`, `Value`
+- The field mapping table should have the following columns: `Field`, `OriginalValue`, `NewValue`
 - The rules table should have the following columns: `Field`, `Category`, `Sep`, `DelMatch`, `DelEnd`, `DelIn`, `DelStart`, `StripFrom`, `DataType`, `Contains`, `Min`, `Max`, `SepPattern`, `KeepLink`
 
 Details on how to structure these tables can be found in the [documentation](https://files2db.readthedocs.io/en/latest/).

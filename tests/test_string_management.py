@@ -50,9 +50,31 @@ class TestDataClean(unittest.TestCase):
         assert_series_equal(result, expected)
 
     def test_del_in_only(self):
-        s = pd.Series(["a123b", "xyz456", "999test999"])
-        expected = pd.Series(["ab", "xyz", "test"])
-        result = data_clean(s, del_in=["123", "456", "999"])
+        s = pd.Series(["a123b", "xyz456", "999test999", "AA"])
+        expected = pd.Series(["ab", "xyz", "test", ""])
+        result = data_clean(s, del_in=["123", "456", "999", "A"])
+        assert_series_equal(result, expected)
+    
+    def test_doc_example(self):
+        s = pd.Series(["A", "AA", "AB", "BA", "BAC"])
+        expected = pd.Series([np.nan, "AA", "AB", "BA", "BAC"])
+        result = data_clean(s, del_match="A")
+        assert_series_equal(result, expected)
+        
+        expected = pd.Series(["", "", "B", "B", "BC"])
+        result = data_clean(s, del_in="A")
+        assert_series_equal(result, expected)
+        
+        expected = pd.Series(["", "A", "B", "BA", "BAC"])
+        result = data_clean(s, del_start="A")
+        assert_series_equal(result, expected)
+        
+        expected = pd.Series(["", "A", "AB", "B", "BAC"])
+        result = data_clean(s, del_end="A")
+        assert_series_equal(result, expected)
+        
+        expected = pd.Series(["", "", "", "B", "B"])
+        result = data_clean(s, strip_from="A")
         assert_series_equal(result, expected)
 
     def test_delin_delstart_delend(self):

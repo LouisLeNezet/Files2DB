@@ -21,7 +21,7 @@ You therefore need the following columns:
 
 - `FilePath`: the absolute path to the file
 - `SheetName`: the sheet name in case of an Excel file
-- `Separator`: character used to separate the columns (e.g. `,`, `;`, `\t`, ` `), needed for plain text files (e.g. `.csv`, `.txt`, `.tsv`)
+- `Separator`: character used to separate the columns (e.g. `;`, `\t`, ` `), needed for plain text files (e.g. `.csv`, `.txt`, `.tsv`) (Note: `,` cannot be used as it is used to split the modalities in the _FieldsRules_ table)
 - `Header`: the line number where the column names are written
 - `LineStart`: the starting line of the data
 - `LineEnd`: the ending line of the data
@@ -59,8 +59,8 @@ More information on the different rules can be found in the [documentation](http
 This files contains modalities correspondance for each field
 
 - `Field`: name of the field to normalize
-- `Eq`: modalities list to modify separated by a `,`
-- `Value`: new value to assign to each modality listed in `Eq`
+- `OriginalValues`: modalities list to modify separated by a `,`
+- `NewValue`: new value to assign to each modality listed in `OriginalValue`
 
 {{ read_csv('assets/values_map.csv', sep=";") }}
 
