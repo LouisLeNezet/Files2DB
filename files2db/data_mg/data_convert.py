@@ -164,7 +164,11 @@ def data_conv(
                 name=data_se.name,
             )
         elif data_type == "bool":
-            data_se = data_se.str.lower().replace({"true": True, "false": False}).fillna(pd.NA)
+            data_se = (
+                data_se.str.lower()
+                .replace({"true": True, "false": False, "1": True, "0": False})
+                .fillna(pd.NA)
+            )
         else:
             raise ValueError(f"Unknown case type: {data_type}")
 

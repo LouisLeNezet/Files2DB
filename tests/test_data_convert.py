@@ -144,7 +144,7 @@ class TestingClass(unittest.TestCase):
             data = data_conv(test_values, "Title")
             assert_series_equal(data, test_result_title)
 
-        test_values = pd.Series(["21.1", None, "002.00"])
+        test_values = pd.Series(["21.1", None, "002,00"])
         test_result_int = pd.Series([21, pd.NA, 2])
         test_result_float = pd.Series([21.1, pd.NA, 2.0])
 
@@ -163,8 +163,8 @@ class TestingClass(unittest.TestCase):
             data = data_conv(test_values, "string")
             assert_series_equal(data, test_result_string)
 
-        test_values = pd.Series(["TrUe", None, "FaLse"])
-        test_result_bool = pd.Series([True, pd.NA, False])
+        test_values = pd.Series(["TrUe", None, "FaLse", "1", "0"])
+        test_result_bool = pd.Series([True, pd.NA, False, True, False])
 
         with self.subTest(line=test_values, to_type="bool"):
             data = data_conv(test_values, "bool")
