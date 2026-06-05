@@ -27,6 +27,14 @@ readme = "README.md"
 files2db = "files2db.cli:app"
 
 [project.optional-dependencies]
+dev = [
+  "pylint",
+  "pytest",
+  "pytest-cov",
+  "ruff",
+  "pre-commit"
+]
+
 docs = [
   "mkdocs-material",
   "mkdocstrings[python]",
