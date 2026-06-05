@@ -1,4 +1,6 @@
-# Normalisation steps
+# Normalisation
+
+## Normalisation steps
 
 After aggregating all input files, `files2db` applies a series of normalisation rules when the `--normalize` option is enabled.
 The rules are defined in the _FieldsRules_ table and are applied sequentially to each field.
@@ -8,12 +10,12 @@ These steps are applied in the following order:
 1. Drop all only NA values rows and columns
 2. Remove all ascii characters and encode data in UTF-8
 3. Process each field defined in _FieldsRules_:
-   - [Split values (`Sep`)](#separate-modalities-in-the-field-using-sep)
-   - [Clean values (`DelMatch`, `DelIn`, `DelStart`, `DelEnd` and `StripFrom`)](#clean-the-field-using-delmatch-delin-delstart-delend-and-stripfrom)
-   - [Convert data type (`DataType`)](#convert-data-type-datatype)
-   - [Apply value mappings with _ValuesMap_ table](#apply-value-mappings-with-valuesmap-table)
-   - [Validate values](#validate-values)
-   - [Split fields (`SepPattern`)](#split-fields-seppattern)
+    1. [Split values (`Sep`)](#separate-modalities)
+    2. [Clean values (`DelMatch`, `DelIn`, `DelStart`, `DelEnd` and `StripFrom`)](#clean-the-field)
+    3. [Convert data type (`DataType`)](#convert-data-type)
+    4. [Apply value mappings with _ValuesMap_ table](#value-mapping)
+    5. [Validate values](#validate-values)
+    6. [Split fields (`SepPattern`)](#split-fields)
 
 !!! note
     Fields are processed in the order in which they appear in the **FieldsRules** table.
@@ -24,39 +26,41 @@ These steps are applied in the following order:
 
 ## Normalisation rules
 
-### Separate modalities in the field using `Sep`
+### Separate modalities
 
 This step allows to split multiple values in a field using the specified separator.
 
 With _Sep_ as `;`
 
-<table style="margin: 0 auto;">
+<div class="table-center">
+<table class="docutils">
   <thead>
     <tr>
-      <th colspan="1" style="text-align:center">Before</th>
-      <th colspan="3" style="text-align:center">After</th>
+      <th colspan="1">Before</th>
+      <th colspan="3">After</th>
     </tr>
     <tr>
-      <th style="text-align:center">MyField</th>
-      <th style="text-align:center">MyField_1</th>
-      <th style="text-align:center">MyField_2</th>
-      <th style="text-align:center">MyField_3</th>
+      <th>MyField</th>
+      <th>MyField_1</th>
+      <th>MyField_2</th>
+      <th>MyField_3</th>
     </tr>
   </thead>
   <tbody>
     <tr>
-      <td style="text-align:center">A;B;C</td>
-      <td style="text-align:center">A</td>
-      <td style="text-align:center">B</td>
-      <td style="text-align:center">C</td>
+      <td>A;B;C</td>
+      <td>A</td>
+      <td>B</td>
+      <td>C</td>
     </tr>
   </tbody>
 </table>
+</div>
 
 !!! warning
     The separator cannot be a comma (`,`) as it is used to split the modalities in the _FieldsRules_ table.
 
-### Clean the field using `DelMatch`, `DelIn`, `DelStart`, `DelEnd` and `StripFrom`
+### Clean the field
 
 This step allows to clean the field using regular expression patterns and is case sensitive.
 
@@ -66,22 +70,78 @@ This step allows to clean the field using regular expression patterns and is cas
 - _DelEnd_: remove the pattern when it occurs at the end of the value
 - _StripFrom_: remove the pattern and everything that follows it
 
-With _pattern_ as `A`:
+With `{pattern}` as `A`:
 
-| Type        | Regex equivalent | A   | AA  | AB  | BA  | BAC |
-| ----------- | ---------------- | --- | --- | --- | --- | --- |
-| _DelMatch_  | `^{pattern}$`    |     | AA  | AB  | BA  | BAC |
-| _DelIn_     | `{pattern}`      |     |     | B   | B   | BC  |
-| _DelStart_  | `^{pattern}`     |     | A   | B   | BA  | BAC |
-| _DelEnd_    | `{pattern}$`     |     | A   | AB  | B   | BAC |
-| _StripFrom_ | `{pattern}.*$`   |     |     |     | B   | B   |
+<div class="table-center">
+<table class="docutils">
+  <thead>
+    <tr>
+      <th>Type</th>
+      <th>Regex equivalent</th>
+      <th>A</th>
+      <th>AA</th>
+      <th>AB</th>
+      <th>BA</th>
+      <th>BAC</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td><em>DelMatch</em></td>
+      <td><code>^{pattern}$</code></td>
+      <td></td>
+      <td>AA</td>
+      <td>AB</td>
+      <td>BA</td>
+      <td>BAC</td>
+    </tr>
+    <tr>
+      <td><em>DelIn</em></td>
+      <td><code>{pattern}</code></td>
+      <td></td>
+      <td></td>
+      <td>B</td>
+      <td>B</td>
+      <td>BC</td>
+    </tr>
+    <tr>
+      <td><em>DelStart</em></td>
+      <td><code>^{pattern}</code></td>
+      <td></td>
+      <td>A</td>
+      <td>B</td>
+      <td>BA</td>
+      <td>BAC</td>
+    </tr>
+    <tr>
+      <td><em>DelEnd</em></td>
+      <td><code>{pattern}$</code></td>
+      <td></td>
+      <td>A</td>
+      <td>AB</td>
+      <td>B</td>
+      <td>BAC</td>
+    </tr>
+    <tr>
+      <td><em>StripFrom</em></td>
+      <td><code>{pattern}.*$</code></td>
+      <td></td>
+      <td></td>
+      <td></td>
+      <td>B</td>
+      <td>B</td>
+    </tr>
+  </tbody>
+</table>
+</div>
+
 
 !!! note
     For details on the regular expression syntax, please refer to the
     [Python documentation](https://docs.python.org/3/library/re.html#re-syntax) and test them using
     the [regex101](https://regex101.com/) website.
 
-### Convert data type (`DataType`)
+### Convert data type
 
 This step allows to convert the data type of the field to one of the following:
 
@@ -94,7 +154,7 @@ This step allows to convert the data type of the field to one of the following:
 - `string`: remains a string
 - `bool`: boolean (e.g. case insensitive `"TRUE"`, `"1"` will become `True` while `"false"` and `0` will become `False`)
 
-### Apply value mappings with _ValuesMap_ table
+### Value mapping
 
 This step allows to apply value mappings defined in the _ValuesMap_ table.
 For each `Field`provided, the `OriginalValues` will be split by a comma (`,`) and each resulting
@@ -102,40 +162,67 @@ modalities, if fully matched, will be replaced by the `NewValue`.
 
 With _ValuesMap_ as:
 
-| Field | OriginalValues  | NewValue |
-| ----- | --------------- | -------- |
-| ColA  | OldVal1,OldVal2 | NewVal1  |
-| ColA  | OldVal3         | NewVal2  |
-| ColB  | OldVal4         | NewVal3  |
-
-<table style="margin: 0 auto;">
+<div class="table-center">
+<table class="docutils">
   <thead>
     <tr>
-      <th colspan="2" style="text-align:center">Before</th>
-      <th colspan="2" style="text-align:center">After</th>
-    </tr>
-    <tr>
-      <th style="text-align:center">ColA</th>
-      <th style="text-align:center">ColB</th>
-      <th style="text-align:center">ColA</th>
-      <th style="text-align:center">ColB</th>
+      <th>Field</th>
+      <th>OriginalValues</th>
+      <th>NewValue</th>
     </tr>
   </thead>
   <tbody>
     <tr>
-      <th style="text-align:center">OldVal1</th>
-      <th style="text-align:center">OldVal4</th>
-      <th style="text-align:center">NewVal1</th>
-      <th style="text-align:center">NewVal3</th>
+      <td>ColA</td>
+      <td>OldVal1,OldVal2</td>
+      <td>NewVal1</td>
     </tr>
     <tr>
-      <th style="text-align:center">OldVal3</th>
-      <th style="text-align:center">OldVal5</th>
-      <th style="text-align:center">NewVal2</th>
-      <th style="text-align:center">OldVal5</th>
+      <td>ColA</td>
+      <td>OldVal3</td>
+      <td>NewVal2</td>
+    </tr>
+    <tr>
+      <td>ColB</td>
+      <td>OldVal4</td>
+      <td>NewVal3</td>
     </tr>
   </tbody>
 </table>
+</div>
+
+Then :
+
+<div class="table-center">
+<table class="docutils">
+  <thead>
+    <tr>
+      <th colspan="2">Before</th>
+      <th colspan="2">After</th>
+    </tr>
+    <tr>
+      <th>ColA</th>
+      <th>ColB</th>
+      <th>ColA</th>
+      <th>ColB</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>OldVal1</td>
+      <td>OldVal4</td>
+      <td>NewVal1</td>
+      <td>NewVal3</td>
+    </tr>
+    <tr>
+      <td>OldVal3</td>
+      <td>OldVal5</td>
+      <td>NewVal2</td>
+      <td>OldVal5</td>
+    </tr>
+  </tbody>
+</table>
+</div>
 
 !!! note
     Multiple mappings can be applied to the same field by defining multiple rows in the _ValuesMap_ table with the same _FieldName_.
@@ -155,7 +242,7 @@ There is two validation possible:
 - `Contains`: list of values separated by a comma (`,`). This test is case sensitive.
 - `Min` and `Max`: for numerical values only.
 
-### Split fields (`SepPattern`)
+### Split fields
 
 This step allows to split the field into multiple fields using a regular expression pattern as separator.
 This use named regex pattern to capture the new field.
@@ -174,48 +261,50 @@ This use named regex pattern to capture the new field.
 
 With `SepPattern` = `(?P<Int>\\d+)|(?P<String>[A-Za-z]+)`
 
-<table style="margin: 0 auto;">
+<div class="table-center">
+<table class="docutils">
   <thead>
     <tr>
-      <th colspan="1" style="text-align:center">Before</th>
-      <th colspan="4" style="text-align:center">After</th>
+      <th colspan="1">Before</th>
+      <th colspan="4">After</th>
     </tr>
     <tr>
-      <th rowspan="2" style="text-align:center">MyField</th>
-      <th colspan="2" style="text-align:center">KeepLink = True</th>
-      <th colspan="2" style="text-align:center">KeepLink = False</th>
+      <th rowspan="2">MyField</th>
+      <th colspan="2">KeepLink = True</th>
+      <th colspan="2">KeepLink = False</th>
     </tr>
     <tr>
-      <th style="text-align:center">MyField_Int</th>
-      <th style="text-align:center">MyField_String</th>
-      <th style="text-align:center">Int</th>
-      <th style="text-align:center">String</th>
+      <th>MyField_Int</th>
+      <th>MyField_String</th>
+      <th>Int</th>
+      <th>String</th>
     </tr>
   </thead>
   <tbody>
     <tr>
-      <th style="text-align:center">1234ABCD</th>
-      <th style="text-align:center">1234</th>
-      <th style="text-align:center">ABCD</th>
-      <th style="text-align:center">1234</th>
-      <th style="text-align:center">ABCD</th>
+      <td>1234ABCD</td>
+      <td>1234</td>
+      <td>ABCD</td>
+      <td>1234</td>
+      <td>ABCD</td>
     </tr>
     <tr>
-      <th style="text-align:center">ABCD 1234</th>
-      <th style="text-align:center">1234</th>
-      <th style="text-align:center">ABCD</th>
-      <th style="text-align:center">1234</th>
-      <th style="text-align:center">ABCD</th>
+      <td>ABCD 1234</td>
+      <td>1234</td>
+      <td>ABCD</td>
+      <td>1234</td>
+      <td>ABCD</td>
     </tr>
     <tr>
-      <th style="text-align:center">456 ABCD 1234</th>
-      <th style="text-align:center">456</th>
-      <th style="text-align:center">ABCD</th>
-      <th style="text-align:center">456</th>
-      <th style="text-align:center">ABCD</th>
+      <td>456 ABCD 1234</td>
+      <td>456</td>
+      <td>ABCD</td>
+      <td>456</td>
+      <td>ABCD</td>
     </tr>
   </tbody>
 </table>
+</div>
 
 #### More complex example
 
@@ -223,37 +312,39 @@ A more complex example when you expect either 1 or 2 value, and if two then spli
 
 With `SepPattern` = `((?P<Left>[A-E])(\/*)(?P<Right>[A-E]))|(?P<Mono>[A-E])`
 
-<table style="margin: 0 auto;">
+<div class="table-center">
+<table class="docutils">
   <thead>
     <tr>
-      <th colspan="1" style="text-align:center">Before</th>
-      <th colspan="3" style="text-align:center">After</th>
+      <th colspan="1">Before</th>
+      <th colspan="3">After</th>
     </tr>
     <tr>
-      <th style="text-align:center">MyField</th>
-      <th style="text-align:center">Left</th>
-      <th style="text-align:center">Right</th>
-      <th style="text-align:center">Mono</th>
+      <th>MyField</th>
+      <th>Left</th>
+      <th>Right</th>
+      <th>Mono</th>
     </tr>
   </thead>
   <tbody>
     <tr>
-      <th style="text-align:center">A/B</th>
-      <th style="text-align:center">A</th>
-      <th style="text-align:center">B</th>
-      <th style="text-align:center"></th>
+      <td>A/B</td>
+      <td>A</td>
+      <td>B</td>
+      <td></td>
     </tr>
     <tr>
-      <th style="text-align:center">BE</th>
-      <th style="text-align:center">B</th>
-      <th style="text-align:center">E</th>
-      <th style="text-align:center"></th>
+      <td>BE</td>
+      <td>B</td>
+      <td>E</td>
+      <td></td>
     </tr>
     <tr>
-      <th style="text-align:center">D</th>
-      <th style="text-align:center"></th>
-      <th style="text-align:center"></th>
-      <th style="text-align:center">D</th>
+      <td>D</td>
+      <td></td>
+      <td></td>
+      <td>D</td>
     </tr>
   </tbody>
 </table>
+</div>

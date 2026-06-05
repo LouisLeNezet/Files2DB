@@ -33,3 +33,6 @@ nav:
   - CLI: cli.md
   - Normalisation: normalisation.md
   - 'Issue Tracker': 'https://github.com/louislenezet/files2db/issues'
+
+extra_css:
+  - stylesheets/extra.css

@@ -29,8 +29,9 @@ You therefore need the following columns:
 - `ColEnd`: the ending column of the data
 - `ToAdd`: a true/false value telling if this file should be aggregated or not
 - `AsCorrection`: a true/false value telling if this file is a special file to be used for data correction
+- `meta_*`: any column starting with `meta_` will be added as an additional value for each row of the file.
 
-{{ read_csv('assets/files.csv', sep=";") }}
+{{ read_csv('assets/files.csv', sep=";", keep_default_na=False) }}
 
 ### _FieldsRules_ table
 
@@ -52,7 +53,7 @@ More information on the different rules can be found in the [documentation](http
 - `Min`: the minimum value for the field (if applicable)
 - `Max`: the maximum value for the field (if applicable)
 
-{{ read_csv('assets/field_rules.csv', sep=";") }}
+{{ read_csv('assets/field_rules.csv', sep=";", keep_default_na=False) }}
 
 ### _ValuesMap_ table
 
@@ -62,7 +63,7 @@ This files contains modalities correspondance for each field
 - `OriginalValues`: modalities list to modify separated by a `,`
 - `NewValue`: new value to assign to each modality listed in `OriginalValue`
 
-{{ read_csv('assets/values_map.csv', sep=";") }}
+{{ read_csv('assets/values_map.csv', sep=";", keep_default_na=False) }}
 
 #### Explanation:
 
