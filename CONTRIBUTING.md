@@ -1,13 +1,13 @@
-# `files2db`: Contributing Guidelines
+# _files2db_: Contributing Guidelines
 
 Hi there!
-Many thanks for taking an interest in improving `files2db`.
+Many thanks for taking an interest in improving _files2db_.
 
-We try to manage the required tasks for `files2db` using GitHub issues, you probably came to this page when creating one.
+We try to manage the required tasks for _files2db_ using GitHub issues, you probably came to this page when creating one.
 
 ## Contribution workflow
 
-If you'd like to write some code for `files2db`, the standard workflow is as follows:
+If you'd like to write some code for _files2db_, the standard workflow is as follows:
 
 1. Check that there isn't already an issue about your idea in the [files2db](https://github.com/LouisLeNezet/files2db/issues) to avoid duplicating work. If there isn't one already, please create one so that others know you're working on this
 2. [Fork](https://help.github.com/en/github/getting-started-with-github/fork-a-repo) the [files2db repository](https://github.com/LouisLeNezet/files2db/) to your GitHub account
@@ -52,7 +52,7 @@ Typically, pull-requests are only fully reviewed when these tests are passing, t
 
 ## Package contribution conventions
 
-To make the `files2db` code and processing logic more understandable for new contributors and to ensure quality, we semi-standardise the way the code and other contributions are written.
+To make the _files2db_ code and processing logic more understandable for new contributors and to ensure quality, we semi-standardise the way the code and other contributions are written.
 
 ### Adding a new function
 

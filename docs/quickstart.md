@@ -2,7 +2,7 @@
 
 ## Installation
 
-`files2db` is available on conda-forge, so you can install it with the following command:
+_files2db_ is available on conda-forge, so you can install it with the following command:
 
 ```bash
 conda install -c conda-forge files2db
@@ -16,7 +16,7 @@ The columns expected for each of these files are the following, but you can find
 
 ### _Files_ table
 
-This file contains the path to each file to aggregate to the database, with information on how to read the data.
+This table contains the path to each file to aggregate to the database, with information on how to read the data.
 You therefore need the following columns:
 
 - `FilePath`: the absolute path to the file
@@ -35,8 +35,8 @@ You therefore need the following columns:
 
 ### _FieldsRules_ table
 
-This file contains the different rules needed to normalize each variable in the aggregated data.
-More information on the different rules can be found in the [documentation](https://files2db.readthedocs.io/en/latest/normalization.html#normalisation).
+This table contains the different rules needed to normalize each variable in the aggregated data.
+More information on the different rules can be found in the [documentation](https://louislenezet.github.io/files2db/normalisation/).
 
 - `Field`: name of the field to normalize
 - `Category`: name of the field category
@@ -57,7 +57,7 @@ More information on the different rules can be found in the [documentation](http
 
 ### _ValuesMap_ table
 
-This files contains modalities correspondance for each field
+This table contains modalities correspondance for each field
 
 - `Field`: name of the field to normalize
 - `OriginalValues`: modalities list to modify separated by a `,`

@@ -183,3 +183,23 @@ def get_db_from_path(path_file: str, db_orga: dict) -> dict:
     db_dict = validate_columns_orga(db_orga, db_dict)
 
     return db_dict
+
+
+def get_db_from(path_orga: str, path_files: str, path_fields_rules: str, path_values_map: str):
+
+    db_orga = load_file_orga()
+
+    if path_orga is not None:
+        if (path_files, path_fields_rules, path_values_map) is not None:
+            raise ValueError(
+                "--path-orga should be used alone."
+                "No --path-files, --path-fields-rules or --path-values-map allowed"
+            )
+        files_list, fields_rules, values_map = get_db_from_path(path_orga, db_orga)
+    else:
+        if path_files is None:
+            raise ValueError("--path-orga nor --path-files provided")
+
+    logging.info("Database loaded successfully")
+
+    return (files_list, fields_rules, values_map)

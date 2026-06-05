@@ -2,7 +2,7 @@
 
 ## Normalisation steps
 
-After aggregating all input files, `files2db` applies a series of normalisation rules when the `--normalize` option is enabled.
+After aggregating all input files, _files2db_ applies a series of normalisation rules when the `--normalize` option is enabled.
 The rules are defined in the _FieldsRules_ table and are applied sequentially to each field.
 
 These steps are applied in the following order:
@@ -10,19 +10,19 @@ These steps are applied in the following order:
 1. Drop all only NA values rows and columns
 2. Remove all ascii characters and encode data in UTF-8
 3. Process each field defined in _FieldsRules_:
-    1. [Split values (`Sep`)](#separate-modalities)
-    2. [Clean values (`DelMatch`, `DelIn`, `DelStart`, `DelEnd` and `StripFrom`)](#clean-the-field)
-    3. [Convert data type (`DataType`)](#convert-data-type)
-    4. [Apply value mappings with _ValuesMap_ table](#value-mapping)
-    5. [Validate values](#validate-values)
-    6. [Split fields (`SepPattern`)](#split-fields)
+   1. [Split values (`Sep`)](#separate-modalities)
+   2. [Clean values (`DelMatch`, `DelIn`, `DelStart`, `DelEnd` and `StripFrom`)](#clean-the-field)
+   3. [Convert data type (`DataType`)](#convert-data-type)
+   4. [Apply value mappings with _ValuesMap_ table](#value-mapping)
+   5. [Validate values](#validate-values)
+   6. [Split fields (`SepPattern`)](#split-fields)
 
 !!! note
-    Fields are processed in the order in which they appear in the **FieldsRules** table.
-    This can affect the result when multiple rules interact.
+Fields are processed in the order in which they appear in the **FieldsRules** table.
+This can affect the result when multiple rules interact.
 
 !!! important
-    The rules are applied sequentially, meaning that the output of one rule will be the input for the next rule.
+The rules are applied sequentially, meaning that the output of one rule will be the input for the next rule.
 
 ## Normalisation rules
 
@@ -58,7 +58,7 @@ With _Sep_ as `;`
 </div>
 
 !!! warning
-    The separator cannot be a comma (`,`) as it is used to split the modalities in the _FieldsRules_ table.
+The separator cannot be a comma (`,`) as it is used to split the modalities in the _FieldsRules_ table.
 
 ### Clean the field
 
@@ -135,11 +135,10 @@ With `{pattern}` as `A`:
 </table>
 </div>
 
-
 !!! note
-    For details on the regular expression syntax, please refer to the
-    [Python documentation](https://docs.python.org/3/library/re.html#re-syntax) and test them using
-    the [regex101](https://regex101.com/) website.
+For details on the regular expression syntax, please refer to the
+[Python documentation](https://docs.python.org/3/library/re.html#re-syntax) and test them using
+the [regex101](https://regex101.com/) website.
 
 ### Convert data type
 
@@ -225,12 +224,12 @@ Then :
 </div>
 
 !!! note
-    Multiple mappings can be applied to the same field by defining multiple rows in the _ValuesMap_ table with the same _FieldName_.
+Multiple mappings can be applied to the same field by defining multiple rows in the _ValuesMap_ table with the same _FieldName_.
 
     Multiple values can be mapped to the same value by separating them with a comma in the _OriginalValues_ column.
 
 !!! important
-    This step is case sensitive except if the field has been converted to lowercase in the previous step.
+This step is case sensitive except if the field has been converted to lowercase in the previous step.
 
 ### Validate values
 
@@ -250,12 +249,12 @@ This use named regex pattern to capture the new field.
 `NewFieldName` should be appended to the old `Field` or as a separate new field.
 
 !!! note
-    For details on the regular expression syntax, please refer to the
-    [Python documentation](https://docs.python.org/3/library/re.html#re-syntax) and test them using
-    the [regex101](https://regex101.com/) website.
+For details on the regular expression syntax, please refer to the
+[Python documentation](https://docs.python.org/3/library/re.html#re-syntax) and test them using
+the [regex101](https://regex101.com/) website.
 
 !!! warning
-    Only the first match of the pattern will be stored in the new field
+Only the first match of the pattern will be stored in the new field
 
 #### Simple example
 

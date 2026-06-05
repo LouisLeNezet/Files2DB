@@ -32,7 +32,6 @@ import pandas as pd
 from .data_mg.data_iterate import iterate_file
 from .data_mg.data_norm import norm_data
 from .read_file.data_read import check_files_exist
-from .read_file.orga_read import get_db_from_path, load_file_orga
 from .ui.get_infos import get_file_path, get_os, welcome
 
 warnings.filterwarnings("ignore", category=UserWarning, module="openpyxl")
@@ -49,74 +48,26 @@ def start():
 
 
 def main(
-    path: str,
+    files_list: pd.DataFrame,
+    fields_rules: pd.DataFrame,
+    values_map: pd.DataFrame,
     normalize: bool,
-    output_folder: str,
-    output_files_prefix: str,
+    output_dir: str,
+    output_prefix: str,
 ):
     """
     Main function to concatenate files and normalize data if needed.
-
-    Parameters
-    ----------
-    path : str
-        The path to the organization file.
-    normalize : bool
-        Whether to normalize the data or not.
-    output_folder : str
-        The folder where the output files will be saved.
-    output_files_prefix : str
-        The prefix for the output files.
-
-    Returns
-    -------
-    all_data_raw : pd.DataFrame
-        The concatenated raw data.
-    all_data : pd.DataFrame or None
-        The normalized data if normalize is True, otherwise None.
-
-    Raises
-    ------
-    FileNotFoundError
-        If one or more files specified in the organization file cannot be found.
-
-    Exception
-        If an error occurs while iterating through the files.
-
-    Notes
-    -----
-    - The function first loads the organization file and retrieves the
-    database information.
-    - It then checks if all files specified in the organization file exist.
-    - If all files exist, it iterates through the files and concatenates the
-    data.
-    - If normalization is requested, it normalizes the data according to the
-    rules specified in the organization file.
-    - Finally, it saves the raw and normalized data to the specified output folder.
-
-    Example
-    -------
-    >>> main(path="path/to/orga_file.xlsx", normalize=True, output_folder="output",
-    ... output_files_prefix="data")
     """
     start()
-    db_orga = load_file_orga()
-    db_get = get_db_from_path(path, db_orga)
-
-    if db_get is None:
-        logging.error("No database found. Please check the file path and format.")
-        return None, None
-
-    logging.info("Database loaded successfully")
 
     try:
-        check_files_exist(db_get["Files"]["FilePath"])
+        check_files_exist(files_list["FilePath"])
     except FileNotFoundError:
         logging.error("One or more files could not be found. Please check the file paths.")
         return None, None
 
     try:
-        all_data_raw = iterate_file(db_get["Files"].loc[db_get["Files"]["ToAdd"]])
+        all_data_raw = iterate_file(files_list.loc[files_list["ToAdd"]])
     except Exception as e:
         logging.error("An error occurred while iterating through the files: %s", e)
         return None, None
@@ -125,12 +76,12 @@ def main(
     logging.info("All data concatenated successfully")
 
     # Check if output folder exists, if not create it
-    if not os.path.exists(output_folder):
-        os.makedirs(output_folder)
-        logging.info("Output folder created: %s", output_folder)
+    if not os.path.exists(output_dir):
+        os.makedirs(output_dir)
+        logging.info("Output folder created: %s", output_dir)
 
     # Save RAW as csv
-    save_path = os.path.join(f"{output_folder}/{output_files_prefix}_{date.today()}_raw.csv")
+    save_path = os.path.join(f"{output_dir}/{output_prefix}_{date.today()}_raw.csv")
     all_data_raw.to_csv(get_file_path(save_path), sep=";")
 
     # Normalize data
@@ -138,14 +89,14 @@ def main(
         logging.info("Normalizing data...")
         all_data = norm_data(
             data_df=all_data_raw,
-            db_field_rules=db_get["FieldRules"],
-            db_values_map=db_get["ValuesMap"],
+            db_field_rules=fields_rules,
+            db_values_map=values_map,
             na_values=None,
             fillna_value=pd.NA,
         )
 
         # Save normalized data
-        save_path = os.path.join(f"{output_folder}/{output_files_prefix}_{date.today()}.csv")
+        save_path = os.path.join(f"{output_dir}/{output_prefix}_{date.today()}.csv")
         all_data.to_csv(get_file_path(save_path), sep=";")
         logging.info("Data saved to %s", save_path)
 
