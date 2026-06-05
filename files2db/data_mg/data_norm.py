@@ -114,7 +114,7 @@ def norm_data(
             continue
         field_infos = db_field_rules.loc[field_i].to_dict()
         field_equiv = db_values_map[db_values_map["Field"] == field].to_dict(orient="records")
-        field_equiv = {d["Value"]: d["Eq"] for d in field_equiv}
+        field_equiv = {d["NewValue"]: d["OriginalValues"] for d in field_equiv}
 
         for col_i in match_cols:
             logging.info("Processing column: %s", col_i)

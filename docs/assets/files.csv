@@ -1,0 +1,4 @@
+﻿FilePath;SheetName;Separator;Header;LineStart;LineEnd;ColStart;ColEnd;ToAdd;AsCorrection;meta_DateFileCreation;meta_ColE
+test_dataset/test1/fileA.xlsx;Feuil1;;3;5;6;C;E;1;;2021-12-01;
+test_dataset/test1/fileB.csv;;;1;2;3;A;C;1;;2024.02.01;MetaNewValue
+test_dataset/test1/fileC.csv;;";";1;2;4;A;E;1;true;2022.01.10;MetaOldValue

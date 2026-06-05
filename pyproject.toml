@@ -7,12 +7,12 @@ name = "files2db"
 dynamic = ["version"]
 description = "A tool to normalize and combine flat files into a database."
 license = "GPL-3.0-or-later"
-requires-python = ">=3.9"
+requires-python = ">=3.13"
 dependencies = [
-    "pandas>=2.2.0,<2.3.0",
+    "pandas>=3.0",
     "xlrd",
     "openpyxl",
-    "typer>=0.16.0,<0.17.0"
+    "typer>=0.26"
 ]
 authors = [{ name = "Louis Le Nézet", email = "louislenezet@gmail.com" }]
 maintainers = [{ name = "Louis Le Nézet", email = "louislenezet@gmail.com" }]
@@ -25,6 +25,23 @@ readme = "README.md"
 
 [project.scripts]
 files2db = "files2db.cli:app"
+
+[project.optional-dependencies]
+dev = [
+  "pylint",
+  "pytest",
+  "pytest-cov",
+  "ruff",
+  "pre-commit"
+]
+
+docs = [
+  "mkdocs-material",
+  "mkdocstrings[python]",
+  "pymdown-extensions",
+  "mkdocs-autorefs",
+  "mkdocs-table-reader-plugin"
+]
 
 [tool.setuptools.packages.find]
 include = ["files2db*"]

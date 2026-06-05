@@ -1,0 +1,4 @@
+﻿Field;Category;Sep;DelMatch;DelIn;DelStart;DelEnd;StripFrom;DataType;Contains;Min;Max;SepPattern;KeepLink
+ColA;ID; or ;NA;;;;;int;int;1;4;;
+ColC;Infos;_;WRONG;prefix;;suffix;other;string;;;;(?P<ColA>\\d+)|(?P<ColC>[A-Za-z]+);False
+DateFileCreation;Other;;???,00;;;;;date;date;;;;

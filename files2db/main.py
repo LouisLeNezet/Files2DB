@@ -54,8 +54,51 @@ def main(
     output_folder: str,
     output_files_prefix: str,
 ):
-    """Main function of the concatenation script."""
+    """
+    Main function to concatenate files and normalize data if needed.
 
+    Parameters
+    ----------
+    path : str
+        The path to the organization file.
+    normalize : bool
+        Whether to normalize the data or not.
+    output_folder : str
+        The folder where the output files will be saved.
+    output_files_prefix : str
+        The prefix for the output files.
+
+    Returns
+    -------
+    all_data_raw : pd.DataFrame
+        The concatenated raw data.
+    all_data : pd.DataFrame or None
+        The normalized data if normalize is True, otherwise None.
+
+    Raises
+    ------
+    FileNotFoundError
+        If one or more files specified in the organization file cannot be found.
+
+    Exception
+        If an error occurs while iterating through the files.
+
+    Notes
+    -----
+    - The function first loads the organization file and retrieves the
+    database information.
+    - It then checks if all files specified in the organization file exist.
+    - If all files exist, it iterates through the files and concatenates the
+    data.
+    - If normalization is requested, it normalizes the data according to the
+    rules specified in the organization file.
+    - Finally, it saves the raw and normalized data to the specified output folder.
+
+    Example
+    -------
+    >>> main(path="path/to/orga_file.xlsx", normalize=True, output_folder="output",
+    ... output_files_prefix="data")
+    """
     start()
     db_orga = load_file_orga()
     db_get = get_db_from_path(path, db_orga)

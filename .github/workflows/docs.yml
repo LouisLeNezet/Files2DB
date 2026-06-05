@@ -1,0 +1,33 @@
+name: Deploy MkDocs
+
+on:
+  push:
+    branches:
+      - main
+      - dev
+
+permissions:
+  contents: write
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.13"
+
+      - name: Install package and docs dependencies
+        run: |
+          pip install -e .[docs]
+
+      - name: Build documentation
+        run: |
+          mkdocs build --strict
+
+      - name: Deploy to GitHub Pages
+        run: |
+          mkdocs gh-deploy --force

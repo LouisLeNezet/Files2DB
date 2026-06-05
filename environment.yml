@@ -2,14 +2,12 @@ name: env_concat
 channels:
   - conda-forge
   - bioconda
-  - anaconda
-  - defaults
 dependencies:
-  - python >= 3.11.0
-  - pandas >= 2.2.0
+  - python=3.13
+  - pandas=3.0
   - numpy
   - xlrd
-  - typer >= 0.16.0
+  - typer=0.26
   - openpyxl
   - pep8
   - pylint
@@ -18,3 +16,6 @@ dependencies:
   - pip
   - ruff
   - pre-commit
+  - mkdocs=1.6
+  - mkdocstrings
+  - mkdocs-material

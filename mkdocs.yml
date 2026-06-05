@@ -1,0 +1,38 @@
+site_name: files2db
+site_description: Documentation for files2db
+site_url: https://louislenezet.github.io/files2db/
+repo_url: https://github.com/louislenezet/files2db
+repo_name: GitHub
+
+theme:
+  name: readthedocs
+  locale: en
+  logo: assets/logo_files2db.svg
+  favicon: assets/logo_files2db.png
+  palette:
+    primary: teal
+    accent: blue
+
+plugins:
+  - search
+  - table-reader
+  - mkdocstrings:
+      handlers:
+        python:
+          paths: [.]
+
+markdown_extensions:
+  - toc:
+      permalink: true
+  - pymdownx.snippets
+  - admonition
+
+nav:
+  - Home: index.md
+  - Quickstart: quickstart.md
+  - CLI: cli.md
+  - Normalisation: normalisation.md
+  - 'Issue Tracker': 'https://github.com/louislenezet/files2db/issues'
+
+extra_css:
+  - stylesheets/extra.css

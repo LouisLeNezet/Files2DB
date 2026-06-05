@@ -1,6 +1,4 @@
-[![codecov](https://codecov.io/gh/louislenezet/files2db/branch/dev/graph/badge.svg)](https://codecov.io/gh/louislenezet/files2db)
-[![Python Version](https://img.shields.io/badge/python-3.13%2B-blue.svg)](https://www.python.org/downloads/)
-[![License](https://img.shields.io/badge/license-GPLv3-green.svg)](https://opensource.org/licenses/gpl-3-0)
+[![Python Version](https://img.shields.io/badge/python-3.13%2B-blue.svg)](https://www.python.org/downloads/) [![codecov](https://codecov.io/gh/louislenezet/files2db/branch/dev/graph/badge.svg)](https://codecov.io/gh/louislenezet/files2db) [![License](https://img.shields.io/badge/license-GPLv3-green.svg)](https://opensource.org/licenses/gpl-3-0)
 
 # Files2DB
 
@@ -8,7 +6,7 @@
   <tr>
     <td>
       <p>
-        <i>One script to rule them all, one script to find them, one script to bring them all and in a database bind them.</i>
+        <i>One script to rule them all, one script to find them, one script to norm them all and in a database bind them.</i>
       </p>
       <p>
         <strong>files2db</strong> is a python tool to help anyone concatenate, normalize and check a multitude of flat plain files (.csv, .xlsx) into a single, standardized database.
@@ -25,102 +23,64 @@
       </ul>
     </td>
     <td style="text-align:right;">
-      <img src="assets/logo_files2db.png" alt="Files2DB Logo" height="100%"/>
+      <img src="docs/assets/logo_files2db.png" alt="Files2DB Logo" height="100%"/>
     </td>
   </tr>
 </table>
 
-## 1. Problematic
+## 1. Problematic and objectives
 
-### 1.1 Starting data
+Projects with numerous data sources often begin with many plain files (CSV and Excel) whose variable names and value formats are not standardized.
+Record identities are frequently encoded in complex, multi-field keys that differ between files.
 
-- Multitude of Excel files and CSV files
-- Modalities of variable not standardized
-- Identity of a line is bound to complex keys
+`files2db` aims to produce a single working dataset with normalized fields and a formal unique identifier for each observation, enabling easy updates, clear error reporting, and full traceability and reproducibility.
 
-### 1.2 Goal
-
-- Single working file
-- Normalized data
-- Needs to formaly identify each observation
-- Simple data update
-- Overview of errors
-- Traceability and reproducibility
-
-### 2.3 Problems to solve
-
-- Identification of an observation:
-  - Not always the same information available, need to check through different candidate keys
-- Data normalization
-  - Need to split some of the information into several columns
-  - Need to merge some of the information into a single column
-  - Need to convert the format of the information
-  - Excel date (no comment)
-- Data validation:
-  - Need to check the format of the information
-  - Need to check the consistency of the information:
+It reliably identifies observations even when candidate keys differ or some identifying fields are missing, normalizes data by splitting/merging fields and converting formats, and validates content by checking formats and internal consistency while reporting errors with causes and locations.
 
 ## 2. Python script
 
-The use of a script will allow all the work of concatenating all the files to be done automatically. The goal is that it, from a csv file referencing all the Excel files to be integrated, accesses these files, iterates through them and updates a database integrating all the available data. This will make it easy to add a new file to update with new data.
+`files2db` automates concatenating and ingesting many source files.
+I takes as input a CSV or Excel file that lists the files to integrate, the tool reads each file, extracts and normalizes available fields, and updates a single database so adding new source files becomes trivial. The process writes a CSV containing the full consolidated dataset and a separate error report that records each issue’s reason and location; it also validates and, when possible, coerces field formats and generates a unique identifier for every observation.
 
-- It will be necessary to have an output file for errors with their reasons and locations as well as a consultation file in csv format containing all the data.
-- For each piece of information, the format of the information must be checked and modified if possible.
-- A unique identifier for each observation must be generated.
+### 2.1 Installation
 
-### 2.1 Script structure
-
-The goal of the script is first to aggregate all the data from the different files, then to normalize it and finally to save it in a database.
-
-### 2.2 Installation
-
-#### 2.2.1 Installation of the repository
-
-First clone the repository
+`files2db` is available on conda-forge, so you can install it with the following command:
 
 ```bash
-git clone https://github.com/LouisLeNezet/Files2DB.git
+conda install -c conda-forge files2db
 ```
 
-#### 2.2.2 Installation of the environment
+### 2.2 Input file
 
-You will need the conda environment mentioned in the `environment.yml` file
+To run `files2db`, you need three different tables:
 
-To install it use:
+- A file list table that contains the list of files to integrate, with their paths and formats.
+- A field mapping table that contains the mapping between the fields in the source files and the fields in the output database
+- A rules table that contains the rules for normalizing the data, such as how to split or merge fields, how to convert formats, and how to generate unique identifiers.
 
-```bash
-conda env create --file environment.yml
-conda activate env_concat
-```
+These tables can be in CSV or Excel format, and they should be structured as follows:
 
-#### 2.2.3 Update dependencies
+- The file list table should have the following columns: `FilePath`, `SheetName`, `LineStart`, `LineEnd`, `Header`, `ColStart`, `ColEnd`, `ToAdd`, `AsCorrection`, `Separator`
+- The field mapping table should have the following columns: `Field`, `OriginalValue`, `NewValue`
+- The rules table should have the following columns: `Field`, `Category`, `Sep`, `DelMatch`, `DelEnd`, `DelIn`, `DelStart`, `StripFrom`, `DataType`, `Contains`, `Min`, `Max`, `SepPattern`, `KeepLink`
 
-To update the dependencies, run the following command:
-
-```bash
-conda env update --file environment.yml
-```
+Details on how to structure these tables can be found in the [documentation](https://files2db.readthedocs.io/en/latest/).
 
 ### 2.3 Launch of the script
 
-To launch the script
+Run
 
 ```bash
-python -m files2db.cli --help
-python -m files2db.cli "file/path"
+files2db --help
+files2db --path "path/to/file.csv" --normalize --output "output/path"
 ```
 
-This command line will launch the script directly in the command prompt with the file `file/path` that you have chosen.
+This command line will launch the script directly in the command prompt with the file `path/to/file.csv` that you have chosen.
+It will then normalize the data and output the resulting database in `output/path`.
+You can also choose to only concatenate the files without normalizing them by omitting the `--normalize` flag.
 
-## 3. Tests
+## 3. Contributions and License
 
-To launch the tests, run the following command:
-
-```bash
-pytest --cov --cov-report=lcov
-coverage lcov
-```
-
-## 4. License
+Contributions to this project are welcome! If you have any suggestions, improvements, or bug fixes, please feel free to submit a pull request. For major changes, please open an issue first to discuss what you would like to change. A detailed contribution guide can be found in the [CONTRIBUTING.md](CONTRIBUTING.md) file.
 
 This project is licensed under the GNU General Public License v3.0. See the [LICENSE](LICENSE) file for details.

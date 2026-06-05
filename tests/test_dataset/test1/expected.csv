@@ -1,7 +1,7 @@
 ;FileName;EmplacementOrigine;Author;RowIndex;ColE;ColA;ColB;ColC_0;ColC_1;ColC_2;ColD_0;ColD_1;DateFileCreation;Error
 0;FileA;Somewhere;Myself;4;;1;a;;;;;;01.12.2021;
 1;FileA;Somewhere;Myself;5;;3;g;;;;03.02.2020;;01.12.2021;
-2;FileB;SomewhereElse;;1;metanewvalue;1;a;b;;;;;01.02.2024;
+2;FileB;SomewhereElse;;1;metanewvalue;1;a;b;d;;;;01.02.2024;
 3;FileB;SomewhereElse;;2;metanewvalue;2;c;d;;;;;01.02.2024;
 4;FileC;Elsewhere;;1;mya;;;;a;;01.02.2020;;;
 5;FileC;Elsewhere;;2;myb;;;;b;;01.03.2020;;;
