@@ -32,21 +32,32 @@ jobs:
           activate-environment: env_concat
 
       - name: Install pip dependencies
-        run: |
-          pip install --upgrade pip setuptools wheel
-          pip install -e .
+        run: pip install -e .
 
-      - name: Run CLI help test
-        run: files2db --help
+      - run: pytest tests
 
-      - name: Run tests with coverage
-        run: conda run -n env_concat pytest tests --cov=files2db --cov-report=xml:coverage.xml --cov-report=term-missing
+  coverage:
+    name: Coverage report (latest Python only)
+    runs-on: ubuntu-latest
+    needs: test
 
-      - name: Upload coverage to Codecov
-        uses: codecov/codecov-action@v5
+    steps:
+      - uses: actions/checkout@v3
+
+      - uses: conda-incubator/setup-miniconda@v2
+        with:
+          environment-file: environment.yml
+          python-version: 3.14
+          activate-environment: env_concat
+          auto-activate-base: false
+
+      - run: pip install -e .
+
+      - run: pytest tests --cov=files2db --cov-report=xml:coverage.xml
+
+      - uses: codecov/codecov-action@v5
         with:
           files: coverage.xml
           flags: unittests
           token: ${{ secrets.CODECOV_TOKEN }}
           fail_ci_if_error: true
-          verbose: true
