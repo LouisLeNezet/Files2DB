@@ -102,7 +102,7 @@ def norm_data(
 
     if "Field" not in db_field_rules.columns:
         logging.error(
-            "No fields defined in the FieldRules. Please check the database organization."
+            "No fields defined in the FieldsRules. Please check the database organization."
         )
         return normed_df, errors_df
 

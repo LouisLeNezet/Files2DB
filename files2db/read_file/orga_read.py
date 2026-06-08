@@ -79,40 +79,39 @@ def _apply_key(orga_entry, df, key, func):
             df[col] = func(df[col])
 
 
-def validate_columns_orga(orga_dict: dict, db_dict: dict):
+def validate_columns_orga(df: pd.DataFrame, file_name: str, rules: dict):
     """Check for missing and extra columns in each file based on organisation specifications."""
-    for file, df in db_dict.items():
-        validate_columns(
-            df,
-            path=file,
-            cols_need=list(orga_dict[file]["columns_needed"]),
-            cols_sup=orga_dict[file]["columns_sup"],
-        )
+    validate_columns(
+        df,
+        path=file_name,
+        cols_need=list(rules["columns_needed"]),
+        cols_sup=rules["columns_sup"],
+    )
 
-        orga_entry = orga_dict[file]
+    orga_entry = rules
 
-        _apply_key(
-            orga_entry, df, "integer", lambda s: pd.to_numeric(s, errors="coerce").astype("Int64")
-        )
-        _apply_key(
-            orga_entry,
-            df,
-            "list",
-            lambda s: s.apply(lambda x: x.split(",") if isinstance(x, str) else x),
-        )
-        _apply_key(
-            orga_entry,
-            df,
-            "boolean",
-            lambda s: s.apply(
-                lambda x: str(x).lower() in ("true", "1", "yes", "on") if isinstance(x, str) else x
-            ).astype("boolean"),
-        )
+    _apply_key(
+        orga_entry, df, "integer", lambda s: pd.to_numeric(s, errors="coerce").astype("Int64")
+    )
+    _apply_key(
+        orga_entry,
+        df,
+        "list",
+        lambda s: s.apply(lambda x: x.split(",") if isinstance(x, str) else x),
+    )
+    _apply_key(
+        orga_entry,
+        df,
+        "boolean",
+        lambda s: s.apply(
+            lambda x: str(x).lower() in ("true", "1", "yes", "on") if isinstance(x, str) else x
+        ).astype("boolean"),
+    )
 
-    return db_dict
+    return df
 
 
-def get_db_from_excel(path: str, orga_dict: dict) -> dict:
+def get_db_from_excel(path: str, orga_dict: dict) -> tuple:
     """Load and validate an Excel file based on organisation specifications."""
     path_file = get_file_path(path)
 
@@ -124,18 +123,30 @@ def get_db_from_excel(path: str, orga_dict: dict) -> dict:
 
     validate_files_presence(set(orga_dict.keys()), set(wb.sheetnames), path)
 
+    if set(wb.sheetnames) != {"Files", "FieldsRules", "ValuesMap"}:
+        raise KeyError(
+            f"Excel sheets in {path} should only contain ",
+            "['Files', 'FieldsRules', 'ValuesMap'] no more no less",
+        )
+
     db_dict = {sheet: read_file(path_file, sheet_name=sheet) for sheet in orga_dict}
 
-    return db_dict
+    return db_dict["Files"], db_dict["FieldsRules"], db_dict["ValuesMap"]
 
 
-def get_db_from_csv(path: str, orga_dict: dict) -> dict:
+def get_db_from_csv(path: str, orga_dict: dict) -> tuple:
     """Load and validate a CSV file based on organisation specifications."""
     path_file = get_file_path(path)
     all_db_files = pd.read_csv(path_file)
 
     if set(all_db_files.columns) != {"file", "path", "sep"}:
         raise KeyError(f"Columns in {path} should only contain ['file', 'path', 'sep']")
+
+    if set(all_db_files["file"]) != {"Files", "FieldsRules", "ValuesMap"}:
+        raise KeyError(
+            f"'file' column in {path} should only contain "
+            "['Files', 'FieldsRules', 'ValuesMap'] no more no less"
+        )
 
     validate_files_presence(set(orga_dict.keys()), set(all_db_files["file"]), path)
 
@@ -145,10 +156,10 @@ def get_db_from_csv(path: str, orga_dict: dict) -> dict:
         db_path_file = get_file_path(file_path)
         db_dict[file] = read_file(db_path_file, sep=sep)
 
-    return db_dict
+    return db_dict["Files"], db_dict["FieldsRules"], db_dict["ValuesMap"]
 
 
-def get_db_from_path(path_file: str, db_orga: dict) -> dict:
+def get_db_from_path(path_file: str, db_orga: dict) -> tuple:
     """
     Get the database from a file based on its extension and organisation specifications.
     Parameters
@@ -174,32 +185,53 @@ def get_db_from_path(path_file: str, db_orga: dict) -> dict:
         raise TypeError("The db_orga should be a dictionary")
 
     if re.search(string=path_file, pattern=r"\.csv$"):
-        db_dict = get_db_from_csv(path_file, db_orga)
+        files_list, fields_rules, values_map = get_db_from_csv(path_file, db_orga)
     elif re.search(string=path_file, pattern=r"\.(xlsx|xls|xlsm)"):
-        db_dict = get_db_from_excel(path_file, db_orga)
+        files_list, fields_rules, values_map = get_db_from_excel(path_file, db_orga)
     else:
         raise TypeError(f"File {path_file} should be either an .xlsx, .xls, xlsm or a .csv")
 
-    db_dict = validate_columns_orga(db_orga, db_dict)
-
-    return db_dict
+    return files_list, fields_rules, values_map
 
 
-def get_db_from(path_orga: str, path_files: str, path_fields_rules: str, path_values_map: str):
+def get_db_from(
+    path_orga: str | None = None,
+    path_files: str | None = None,
+    path_fields_rules: str | None = None,
+    path_values_map: str | None = None,
+    sep: str = ",",
+):
 
     db_orga = load_file_orga()
 
     if path_orga is not None:
-        if (path_files, path_fields_rules, path_values_map) is not None:
+        if not all(f is None for f in [path_files, path_fields_rules, path_values_map]):
             raise ValueError(
-                "--path-orga should be used alone."
+                "--path-orga should be used alone. "
                 "No --path-files, --path-fields-rules or --path-values-map allowed"
             )
         files_list, fields_rules, values_map = get_db_from_path(path_orga, db_orga)
     else:
         if path_files is None:
             raise ValueError("--path-orga nor --path-files provided")
+        else:
+            path_files_norm = get_file_path(path_files)
+            files_list = read_file(path_files_norm, sep=sep)
 
-    logging.info("Database loaded successfully")
+            if path_fields_rules is not None:
+                path_fields_rules_norm = get_file_path(path_fields_rules)
+                fields_rules = read_file(path_fields_rules_norm, sep=sep)
+
+            if path_values_map is not None:
+                path_values_map_norm = get_file_path(path_values_map)
+                values_map = read_file(path_values_map_norm, sep=sep)
+
+    logging.info("Input files loaded successfully")
+
+    files_list = validate_columns_orga(files_list, "Files", db_orga["Files"])
+    fields_rules = validate_columns_orga(fields_rules, "FieldsRules", db_orga["FieldsRules"])
+    values_map = validate_columns_orga(values_map, "ValuesMap", db_orga["ValuesMap"])
+
+    logging.info("Input files successfully checked")
 
     return (files_list, fields_rules, values_map)

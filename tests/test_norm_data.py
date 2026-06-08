@@ -8,7 +8,7 @@ from pandas.testing import assert_frame_equal
 from files2db.data_mg.data_norm import initial_clean_na_values_utf8, norm_data
 from files2db.data_mg.utils import df_to_str_keep_na
 from files2db.read_file.data_read import read_file
-from files2db.read_file.orga_read import get_db_from_path, load_file_orga
+from files2db.read_file.orga_read import get_db_from
 
 
 class TestingInitCleanClass(unittest.TestCase):
@@ -58,7 +58,7 @@ class TestingNormData(unittest.TestCase):
     def test_normdata_complex(self):
         """Test the normalisation process."""
         db_path = os.path.join(self.test_data_path, "orga.csv")
-        db_files = get_db_from_path(db_path, load_file_orga())
+        _files_list, fields_rules, values_map = get_db_from(path_orga=db_path)
 
         file_path = os.path.join(self.test_data_path, "file_complex.csv")
         df_file = read_file(file_path, sep=";")
@@ -70,8 +70,8 @@ class TestingNormData(unittest.TestCase):
 
         result = norm_data(
             data_df=df_file,
-            db_field_rules=db_files["FieldRules"],
-            db_values_map=db_files["ValuesMap"],
+            db_field_rules=fields_rules,
+            db_values_map=values_map,
             na_values=["", None, "NaN", "nan", "<na>", "None", {}],
             fillna_value="NA",
         )

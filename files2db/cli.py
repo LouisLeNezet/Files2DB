@@ -23,6 +23,7 @@ Script to launch the application
 """
 
 import logging
+import sys
 
 import typer
 
@@ -33,7 +34,11 @@ from .read_file.orga_read import get_db_from
 
 logging.basicConfig(level=logging.INFO)
 
-app = typer.Typer(name="files2db", add_completion=False)
+app = typer.Typer(
+    name="files2db",
+    add_completion=False,
+    invoke_without_command=True,
+)
 
 
 def show_notice():
@@ -43,17 +48,26 @@ def show_notice():
     typer.echo("under certain conditions; type '--license' for details.\n")
 
 
-@app.command()
+@app.callback()
 def cli(
-    path_orga: str = typer.Option(None, "--path-orga", "-g", help="Path to the main file to use."),
+    ctx: typer.Context,
+    path_orga: str = typer.Option(
+        None, "--path-orga", "-g", help="Path to the file with the three tables."
+    ),
     path_files: str = typer.Option(
-        None, "--path-files", "-f", help="Path to the main file to use."
+        None, "--path-files", "-f", help="Path to the table listing the files to aggregate."
     ),
     path_fields_rules: str = typer.Option(
-        None, "--path-fields-rules", "-r", help="Path to the main file to use."
+        None,
+        "--path-fields-rules",
+        "-r",
+        help="Path to the table with the fields normalising rules.",
     ),
     path_values_map: str = typer.Option(
-        None, "--path-values-map", "-m", help="Path to the main file to use."
+        None, "--path-values-map", "-m", help="Path to the modalities mapping table."
+    ),
+    sep: str = typer.Option(
+        None, "--sep", "-s", help="Separator to be used for the input csv files."
     ),
     normalize: bool = typer.Option(
         False, "--normalize", "-n", help="Normalize the data after concatenation."
@@ -68,6 +82,10 @@ def cli(
     warranty: bool = typer.Option(False, "--warranty", help="Show warranty disclaimer and exit."),
     version: bool = typer.Option(False, "--version", help="Show version and exit."),
 ):
+    if len(ctx.args) == 0 and len(sys.argv) == 1:
+        typer.echo(ctx.get_help())
+        raise typer.Exit()
+
     if version:
         typer.echo(f"files2db version {__version__}")
         raise typer.Exit()
@@ -93,12 +111,25 @@ def cli(
 
     show_notice()
 
+    if not path_orga and not path_files:
+        typer.echo(
+            "Error: You must provide either:\n"
+            "  --path-orga PATH\n"
+            "or\n"
+            "  --path-files PATH [--path-fields-rules PATH] [--path-values-map PATH]"
+        )
+        raise typer.Exit(code=1)
+
     files_list, fields_rules, values_map = get_db_from(
         path_orga=path_orga,
         path_files=path_files,
         path_fields_rules=path_fields_rules,
         path_values_map=path_values_map,
+        sep=sep,
     )
+
+    if normalize and fields_rules is None and values_map is None:
+        raise ValueError("Normalising step needs at least fields rules or values map table.")
 
     # Call the main logic
     main(
