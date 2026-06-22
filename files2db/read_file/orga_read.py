@@ -125,8 +125,8 @@ def get_db_from_excel(path: str, orga_dict: dict) -> tuple:
 
     if set(wb.sheetnames) != {"Files", "FieldsRules", "ValuesMap"}:
         raise KeyError(
-            f"Excel sheets in {path} should only contain ",
-            "['Files', 'FieldsRules', 'ValuesMap'] no more no less",
+            f"Excel sheets in {path} should only contain "
+            + "'Files', 'FieldsRules', 'ValuesMap' no more no less"
         )
 
     db_dict = {sheet: read_file(path_file, sheet_name=sheet) for sheet in orga_dict}
@@ -140,12 +140,12 @@ def get_db_from_csv(path: str, orga_dict: dict) -> tuple:
     all_db_files = pd.read_csv(path_file)
 
     if set(all_db_files.columns) != {"file", "path", "sep"}:
-        raise KeyError(f"Columns in {path} should only contain ['file', 'path', 'sep']")
+        raise KeyError(f"Columns in {path} should only contain 'file', 'path', 'sep'")
 
     if set(all_db_files["file"]) != {"Files", "FieldsRules", "ValuesMap"}:
         raise KeyError(
             f"'file' column in {path} should only contain "
-            "['Files', 'FieldsRules', 'ValuesMap'] no more no less"
+            + "'Files', 'FieldsRules', 'ValuesMap' no more no less"
         )
 
     validate_files_presence(set(orga_dict.keys()), set(all_db_files["file"]), path)

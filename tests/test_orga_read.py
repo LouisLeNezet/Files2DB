@@ -182,6 +182,16 @@ class TestGetDBFromExcel(unittest.TestCase):
         with self.assertRaises(FileNotFoundError):
             get_db_from_excel(file_path, {})
 
+    def test_get_db_from_excel_extra_sheets(self):
+        """Test missing file error."""
+        file_path = os.path.join(self.test_data_path, "RepTest_wrong_extra_sheets.xlsx")
+        with self.assertRaises(KeyError) as context:
+            get_db_from_excel(file_path, {})
+        self.assertIn(
+            "should only contain 'Files', 'FieldsRules', 'ValuesMap' no more no less",
+            str(context.exception),
+        )
+
     def test_get_db_from_excel_missing_sheet(self):
         """Test missing sheet error."""
         file_path = os.path.join(self.test_data_path, "RepTest_wrong.xlsx")
@@ -230,7 +240,17 @@ class TestGetDBFromCSV(unittest.TestCase):
         file_path = os.path.join(self.test_data_path, "wrong_orga.csv")
         with self.assertRaises(KeyError) as context:
             get_db_from_csv(file_path, {})
-        self.assertIn("Columns in", str(context.exception))
+        self.assertIn("should only contain 'file', 'path', 'sep'", str(context.exception))
+
+    def test_get_db_from_csv_wrong_values_in_files(self):
+        """Test wrong columns error."""
+        file_path = os.path.join(self.test_data_path, "wrong_orga_extra_file.csv")
+        with self.assertRaises(KeyError) as context:
+            get_db_from_csv(file_path, {})
+        self.assertIn(
+            "should only contain 'Files', 'FieldsRules', 'ValuesMap' no more no less",
+            str(context.exception),
+        )
 
     def test_get_db_from_csv_missing_files(self):
         """Test missing files error."""

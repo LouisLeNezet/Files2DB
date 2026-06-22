@@ -82,7 +82,7 @@ def cli(
     warranty: bool = typer.Option(False, "--warranty", help="Show warranty disclaimer and exit."),
     version: bool = typer.Option(False, "--version", help="Show version and exit."),
 ):
-    if len(ctx.args) == 0 and len(sys.argv) == 1:
+    if len(sys.argv) == 1:
         typer.echo(ctx.get_help())
         raise typer.Exit()
 

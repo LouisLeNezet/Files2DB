@@ -9,7 +9,7 @@ files2db --help
 # Use one file with all tables
 files2db --path-orga path/to/orga.{csv,xlsx} \
     --output-dir results \
-    --prefix normalized_data \
+    --output-prefix normalized_data \
     --normalize
 
 # Give each table separately
@@ -17,7 +17,7 @@ files2db --path-files path/to/files.csv \
     --path-fields-rules path/to/fields_rules.csv \
     --path-values-map path/to/values_map.csv \
     --output-dir results \
-    --prefix normalized_data \
+    --output-prefix normalized_data \
     --normalize
 ```
 

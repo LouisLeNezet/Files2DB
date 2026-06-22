@@ -38,6 +38,16 @@ class TestCLI(unittest.TestCase):
         self.assertEqual(result.exit_code, 0)
         self.assertIn("warranty", result.stdout.lower())
 
+    @patch("files2db.cli.sys.argv", ["files2db"])
+    def test_no_arguments(self):
+        result = runner.invoke(app, [])
+
+        print(result.exit_code)
+        print(result.stdout)
+
+        self.assertEqual(result.exit_code, 0)
+        self.assertIn("Usage:", result.stdout)
+
     @patch("files2db.cli.get_db_from")
     @patch("files2db.cli.main")
     def test_main_no_error(self, mock_main, mock_get_db):
@@ -85,6 +95,20 @@ class TestCLI(unittest.TestCase):
         mock_main.assert_not_called()
 
     def test_main_error_main_table_mising(self):
+        result = runner.invoke(
+            app,
+            [
+                "--output-dir",
+                "outdir",
+                "--output-prefix",
+                "testprefix",
+            ],
+        )
+
+        self.assertEqual(result.exit_code, 1)
+        self.assertRegex(result.stdout, "Error: You must provide either:")
+
+    def test_main_error_main_table_mising_with_normalize(self):
         result = runner.invoke(
             app,
             [
