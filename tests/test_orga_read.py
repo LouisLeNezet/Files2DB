@@ -267,6 +267,37 @@ class TestGetDBFromCSV(unittest.TestCase):
         self.assertEqual(values_map.shape, (2, 3))
 
 
+class TestGetDBFromPATH(unittest.TestCase):
+    """Check that the get_db_from_path function works as expected."""
+
+    def setUp(self):
+        """Set up test data path"""
+        self.test_data_path = os.path.join(os.path.dirname(__file__), "test_dataset")
+
+    def test_get_db_from_path_correct(self):
+        """Test should work."""
+        file_path = os.path.join(self.test_data_path, "RepTest_correct.xlsx")
+        files_list, fields_rules, values_map = get_db_from_path(file_path, load_file_orga())
+        self.assertEqual(files_list.shape, (2, 20))
+        self.assertEqual(fields_rules.shape, (10, 15))
+        self.assertEqual(values_map.shape, (6, 3))
+
+    def test_get_db_from_path_orga_wrong_db_format(self):
+        """Test wrong db_orga type."""
+        file_path = os.path.join(self.test_data_path, "RepTest_correct.xlsx")
+        with self.assertRaises(TypeError) as context:
+            get_db_from_path(file_path, [])
+        self.assertIn("The db_orga should be a dictionary", str(context.exception))
+
+    def test_get_db_from_path_orga_wrong_file_format(self):
+        """Test wrong file format."""
+        # From xlsx
+        file_path = os.path.join(self.test_data_path, "RepTest_correct.tsv")
+        with self.assertRaises(TypeError) as context:
+            get_db_from_path(file_path, load_file_orga())
+        self.assertIn("should be either an .xlsx, .xls, xlsm or a .csv", str(context.exception))
+
+
 class TestGetDBFrom(unittest.TestCase):
     """Check that the get_db_from function works as expected."""
 
@@ -287,6 +318,21 @@ class TestGetDBFrom(unittest.TestCase):
         with self.assertRaises(FileNotFoundError):
             get_db_from(path_orga=file_path)
 
+    def test_get_db_from_path_orga_not_alone(self):
+        """Test path_orga should be used alone."""
+        path_files = os.path.join(self.test_data_path, "test1/files.csv")
+        path_values_map = os.path.join(self.test_data_path, "test1/values_map.csv")
+        with self.assertRaises(ValueError) as context:
+            get_db_from(path_orga=path_files, path_values_map=path_values_map)
+        self.assertIn("--path-orga should be used alone.", str(context.exception))
+
+    def test_get_db_from_no_path_file(self):
+        """Test no path_files provided."""
+        path_values_map = os.path.join(self.test_data_path, "test1/values_map.csv")
+        with self.assertRaises(ValueError) as context:
+            get_db_from(path_values_map=path_values_map)
+        self.assertIn("--path-orga nor --path-files provided", str(context.exception))
+
     def test_get_db_from_correct(self):
         """Test correct file."""
         # From CSV
@@ -300,7 +346,7 @@ class TestGetDBFrom(unittest.TestCase):
 
         # From xlsx
         file_path = os.path.join(self.test_data_path, "RepTest_correct.xlsx")
-        files_list, fields_rules, values_map = get_db_from_path(file_path, load_file_orga())
+        files_list, fields_rules, values_map = get_db_from(file_path)
         self.assertEqual(files_list.shape, (2, 20))
         self.assertEqual(fields_rules.shape, (10, 15))
         self.assertEqual(values_map.shape, (6, 3))
