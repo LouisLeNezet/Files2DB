@@ -11,16 +11,6 @@
       <p>
         <strong>files2db</strong> is a python tool to help anyone concatenate, normalize and check a multitude of flat plain files (.csv, .xlsx) into a single, standardized database.
       </p>
-      <ul>
-        <li><a href="#1-problematic">Problematic</a></li>
-        <li><a href="#2-python-script">Python script</a>
-          <ul>
-            <li><a href="#21-script-structure">Script structure</a></li>
-            <li><a href="#22-installation">Installation</a></li>
-            <li><a href="#23-launch-of-the-script">Launch</a></li>
-          </ul>
-        </li>
-      </ul>
     </td>
     <td style="text-align:right;">
       <img src="docs/assets/logo_files2db.png" alt="Files2DB Logo" height="100%"/>
@@ -30,21 +20,21 @@
 
 ## 1. Problematic and objectives
 
-Projects with numerous data sources often begin with many plain files (CSV and Excel) whose variable names and value formats are not standardized.
+Projects with numerous data sources often begin with many plain files (`.csv` and `.xlsx`) whose variable names and value formats are not standardized.
 Record identities are frequently encoded in complex, multi-field keys that differ between files.
 
-`files2db` aims to produce a single working dataset with normalized fields and a formal unique identifier for each observation, enabling easy updates, clear error reporting, and full traceability and reproducibility.
+_files2db_ aims to produce a single working dataset with normalized fields and a formal unique identifier for each observation, enabling easy updates, clear error reporting, and full traceability and reproducibility.
 
 It reliably identifies observations even when candidate keys differ or some identifying fields are missing, normalizes data by splitting/merging fields and converting formats, and validates content by checking formats and internal consistency while reporting errors with causes and locations.
 
 ## 2. Python script
 
-`files2db` automates concatenating and ingesting many source files.
-I takes as input a CSV or Excel file that lists the files to integrate, the tool reads each file, extracts and normalizes available fields, and updates a single database so adding new source files becomes trivial. The process writes a CSV containing the full consolidated dataset and a separate error report that records each issue’s reason and location; it also validates and, when possible, coerces field formats and generates a unique identifier for every observation.
+_files2db_ automates concatenating and ingesting many source files.
+I takes as input a `.csv` or `.xlsx` file that lists the files to integrate, the tool reads each file, extracts and normalizes available fields, and updates a single database so adding new source files becomes trivial. The process writes a `.csv` containing the full consolidated dataset and a separate error report that records each issue’s reason and location; it also validates and, when possible, coerces field formats and generates a unique identifier for every observation.
 
 ### 2.1 Installation
 
-`files2db` is available on conda-forge, so you can install it with the following command:
+_files2db_ is available on conda-forge, so you can install it with the following command:
 
 ```bash
 conda install -c conda-forge files2db
@@ -52,19 +42,20 @@ conda install -c conda-forge files2db
 
 ### 2.2 Input file
 
-To run `files2db`, you need three different tables:
+To run _files2db_, you need three different tables:
 
-- A file list table that contains the list of files to integrate, with their paths and formats.
-- A field mapping table that contains the mapping between the fields in the source files and the fields in the output database
-- A rules table that contains the rules for normalizing the data, such as how to split or merge fields, how to convert formats, and how to generate unique identifiers.
+- _Files_: list of files to integrate, with their paths and formats.
+- _ValueMap_: modalities mapping between the source files and the output database
+- _FieldsRules_: rules to normalize the data (e.g. how to split or merge fields, expected formats, ...)
 
-These tables can be in CSV or Excel format, and they should be structured as follows:
+These tables can be in 3 `.csv` or 1 `.xlsx` file, and should be structured with the following columns:
 
-- The file list table should have the following columns: `FilePath`, `SheetName`, `LineStart`, `LineEnd`, `Header`, `ColStart`, `ColEnd`, `ToAdd`, `AsCorrection`, `Separator`
-- The field mapping table should have the following columns: `Field`, `OriginalValue`, `NewValue`
-- The rules table should have the following columns: `Field`, `Category`, `Sep`, `DelMatch`, `DelEnd`, `DelIn`, `DelStart`, `StripFrom`, `DataType`, `Contains`, `Min`, `Max`, `SepPattern`, `KeepLink`
+- _Files_: `FilePath`, `SheetName`, `LineStart`, `LineEnd`, `Header`, `ColStart`, `ColEnd`, `ToAdd`, `AsCorrection`, `Separator`
+- _ValueMap_: `Field`, `OriginalValue`, `NewValue`
+- _FieldsRules_: `Field`, `Category`, `Sep`, `DelMatch`, `DelEnd`, `DelIn`, `DelStart`, `StripFrom`, `DataType`, `Contains`, `Min`, `Max`, `SepPattern`, `KeepLink`
 
-Details on how to structure these tables can be found in the [documentation](https://files2db.readthedocs.io/en/latest/).
+Template of this files can be found in the [assets folder](https://github.com/LouisLeNezet/files2db/tree/main/docs/assets/)
+Details on how to structure these tables can be found in the [documentation](https://louislenezet.github.io/files2db/quickstart/).
 
 ### 2.3 Launch of the script
 

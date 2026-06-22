@@ -4,6 +4,7 @@ Created on 07/10/2021
 @author: Louis Le Nézet
 """
 
+import os
 import unittest
 from unittest.mock import patch
 
@@ -15,6 +16,10 @@ runner = CliRunner()
 
 
 class TestCLI(unittest.TestCase):
+    def setUp(self):
+        """Set up test data path"""
+        self.test_data_path = os.path.join(os.path.dirname(__file__), "test_dataset")
+
     def test_version(self):
         result = runner.invoke(app, ["--version"])
 
@@ -33,31 +38,87 @@ class TestCLI(unittest.TestCase):
         self.assertEqual(result.exit_code, 0)
         self.assertIn("warranty", result.stdout.lower())
 
-    def test_missing_path(self):
+    @patch("files2db.cli.sys.argv", ["files2db"])
+    def test_no_arguments(self):
         result = runner.invoke(app, [])
 
-        self.assertNotEqual(result.exit_code, 0)
-        self.assertIn("Missing argument", result.stdout)
+        print(result.exit_code)
+        print(result.stdout)
 
+        self.assertEqual(result.exit_code, 0)
+        self.assertIn("Usage:", result.stdout)
+
+    @patch("files2db.cli.get_db_from")
     @patch("files2db.cli.main")
-    def test_main_called(self, mock_main):
+    def test_main_no_error(self, mock_main, mock_get_db):
+        mock_get_db.return_value = ([], None, None)
+        db_path = os.path.join(self.test_data_path, "test1/orga.csv")
         result = runner.invoke(
             app,
             [
-                "input.txt",
-                "--normalize",
-                "--output",
+                "--path-orga",
+                db_path,
+                "--output-dir",
                 "outdir",
-                "--prefix",
+                "--output-prefix",
                 "testprefix",
             ],
         )
 
         self.assertEqual(result.exit_code, 0)
+        mock_main.assert_called_once()
 
-        mock_main.assert_called_once_with(
-            path="input.txt",
-            normalize=True,
-            output_folder="outdir",
-            output_files_prefix="testprefix",
+    @patch("files2db.cli.get_db_from")
+    @patch("files2db.cli.main")
+    def test_main_error_normalise_table_missing(self, mock_main, mock_get_db):
+        mock_get_db.return_value = ([], None, None)
+        db_path = os.path.join(self.test_data_path, "test1/orga.csv")
+        result = runner.invoke(
+            app,
+            [
+                "--path-orga",
+                db_path,
+                "--normalize",
+                "--output-dir",
+                "outdir",
+                "--output-prefix",
+                "testprefix",
+            ],
         )
+        print(result.exception)
+
+        self.assertEqual(result.exit_code, 1)
+        self.assertRegex(
+            str(result.exception),
+            "Normalising step needs at least fields rules or values map table.",
+        )
+        mock_main.assert_not_called()
+
+    def test_main_error_main_table_mising(self):
+        result = runner.invoke(
+            app,
+            [
+                "--output-dir",
+                "outdir",
+                "--output-prefix",
+                "testprefix",
+            ],
+        )
+
+        self.assertEqual(result.exit_code, 1)
+        self.assertRegex(result.stdout, "Error: You must provide either:")
+
+    def test_main_error_main_table_mising_with_normalize(self):
+        result = runner.invoke(
+            app,
+            [
+                "--normalize",
+                "--output-dir",
+                "outdir",
+                "--output-prefix",
+                "testprefix",
+            ],
+        )
+
+        self.assertEqual(result.exit_code, 1)
+        self.assertRegex(result.stdout, "Error: You must provide either:")

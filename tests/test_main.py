@@ -8,6 +8,7 @@ from pandas._testing import assert_frame_equal
 from files2db.data_mg.utils import df_to_str_keep_na
 from files2db.main import main
 from files2db.read_file.data_read import read_file
+from files2db.read_file.orga_read import get_db_from
 
 logging.basicConfig(level=logging.DEBUG)
 
@@ -22,16 +23,17 @@ class TestMainFunction(unittest.TestCase):
         """Test the main function with a sample path and no normalisation."""
         # Define a sample path and options
         db_path = os.path.join(self.test_data_path, "test1/orga.csv")
-        normalize = False
-        output_folder = "./DataGenerated"
-        output_files_prefix = "AllID"
+
+        files_list, fields_rules, values_map = get_db_from(path_orga=db_path)
 
         # Call the main function
         df_raw, df_norm = main(
-            path=db_path,
-            normalize=normalize,
-            output_folder=output_folder,
-            output_files_prefix=output_files_prefix,
+            files_list=files_list,
+            fields_rules=fields_rules,
+            values_map=values_map,
+            normalize=False,
+            output_dir="./DataGenerated",
+            output_prefix="AllID",
         )
 
         # Check if the output DataFrames are not None
@@ -45,16 +47,17 @@ class TestMainFunction(unittest.TestCase):
         """Test the main function with a sample path and normalisation."""
         # Define a sample path and options
         db_path = os.path.join(self.test_data_path, "test1/orga.csv")
-        normalize = True
-        output_folder = os.path.join(self.test_data_path, "DataGenerated")
-        output_files_prefix = "AllID"
+        output_dir = os.path.join(self.test_data_path, "DataGenerated")
+        files_list, fields_rules, values_map = get_db_from(path_orga=db_path)
 
         # Call the main function
         df_raw, df_norm = main(
-            path=db_path,
-            normalize=normalize,
-            output_folder=output_folder,
-            output_files_prefix=output_files_prefix,
+            files_list=files_list,
+            fields_rules=fields_rules,
+            values_map=values_map,
+            normalize=True,
+            output_dir=output_dir,
+            output_prefix="AllID",
         )
 
         # Check if the output DataFrames are not None
@@ -74,12 +77,9 @@ class TestMainFunction(unittest.TestCase):
         df_norm = df_to_str_keep_na(df_norm)
         db_expected = df_to_str_keep_na(db_expected)
 
-        print(df_norm.columns)
-        print(db_expected.columns)
-
         assert_frame_equal(df_norm, db_expected, check_dtype=False)
-        if os.path.exists(output_folder):
-            shutil.rmtree(output_folder)
+        if os.path.exists(output_dir):
+            shutil.rmtree(output_dir)
 
 
 if __name__ == "__main__":

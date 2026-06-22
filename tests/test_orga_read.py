@@ -13,6 +13,7 @@ from unittest.mock import patch
 import pandas as pd
 
 from files2db.read_file.orga_read import (
+    get_db_from,
     get_db_from_csv,
     get_db_from_excel,
     get_db_from_path,
@@ -65,7 +66,7 @@ class TestingLoadFileOrga(unittest.TestCase):
         db_orga = load_file_orga()
         self.assertEqual(
             list(db_orga.keys()),
-            ["Files", "FieldRules", "ValuesMap"],
+            ["Files", "FieldsRules", "ValuesMap"],
         )
         self.assertEqual(
             list(db_orga["Files"].keys()),
@@ -141,43 +142,31 @@ class TestColumnValidationOrga(unittest.TestCase):
 
     def test_validate_columns_missing_columns(self):
         """Test missing columns error."""
-        orga_dict = {
-            "file1": {"columns_needed": ["A", "B"], "columns_sup": False},
-            "file2": {"columns_needed": ["C", "D"], "columns_sup": True},
-        }
-        db_dict = {
-            "file1": pd.DataFrame(columns=["A", "D"]),
-            "file2": pd.DataFrame(columns=["C", "D", "E"]),
-        }
         with self.assertRaises(KeyError) as context:
-            validate_columns_orga(orga_dict, db_dict)
+            validate_columns_orga(
+                pd.DataFrame(columns=["A", "D"]),
+                "file1",
+                {"columns_needed": ["A", "B"], "columns_sup": False},
+            )
         self.assertIn("Missing columns {'B'} in", str(context.exception))
 
     @patch("logging.warning")
     def test_validate_columns_orga_extra_columns(self, mock_log):
         """Test logging when extra columns exist."""
-        orga_dict = {
-            "file1": {"columns_needed": ["A", "B"], "columns_sup": False},
-            "file2": {"columns_needed": ["C", "D"], "columns_sup": False},
-        }
-        db_dict = {
-            "file1": pd.DataFrame(columns=["A", "B"]),
-            "file2": pd.DataFrame(columns=["C", "D", "E"]),
-        }
-        validate_columns_orga(orga_dict, db_dict)
+        validate_columns_orga(
+            pd.DataFrame(columns=["C", "D", "E"]),
+            "file2",
+            {"columns_needed": ["C", "D"], "columns_sup": False},
+        )
         mock_log.assert_called_once_with("Extra columns %s in %s and won't be used", {"E"}, "file2")
 
     def test_validate_columns_orga_correct(self):
         """Test validate_columns_orga."""
-        orga_dict = {
-            "file1": {"columns_needed": ["A", "B"], "columns_sup": False},
-            "file2": {"columns_needed": ["C", "D"], "columns_sup": True},
-        }
-        db_dict = {
-            "file1": pd.DataFrame(columns=["A", "B"]),
-            "file2": pd.DataFrame(columns=["C", "D", "E"]),
-        }
-        validate_columns_orga(orga_dict, db_dict)
+        validate_columns_orga(
+            pd.DataFrame(columns=["C", "D", "E"]),
+            "file2",
+            {"columns_needed": ["C", "D"], "columns_sup": True},
+        )
 
 
 class TestGetDBFromExcel(unittest.TestCase):
@@ -192,6 +181,16 @@ class TestGetDBFromExcel(unittest.TestCase):
         file_path = os.path.join(self.test_data_path, "missing.xlsx")
         with self.assertRaises(FileNotFoundError):
             get_db_from_excel(file_path, {})
+
+    def test_get_db_from_excel_extra_sheets(self):
+        """Test missing file error."""
+        file_path = os.path.join(self.test_data_path, "RepTest_wrong_extra_sheets.xlsx")
+        with self.assertRaises(KeyError) as context:
+            get_db_from_excel(file_path, {})
+        self.assertIn(
+            "should only contain 'Files', 'FieldsRules', 'ValuesMap' no more no less",
+            str(context.exception),
+        )
 
     def test_get_db_from_excel_missing_sheet(self):
         """Test missing sheet error."""
@@ -213,28 +212,20 @@ class TestGetDBFromPath(unittest.TestCase):
     def test_get_db_from_path_correct_xlsx(self, mock_log):
         """Test missing sheet error."""
         file_path = os.path.join(self.test_data_path, "RepTest_correct.xlsx")
-        db_orga = get_db_from_path(file_path, load_file_orga())
-        mock_log.assert_called_once_with(
-            "Extra columns %s in %s and won't be used", {"OptColToNotUse"}, "FieldRules"
-        )
-        self.assertEqual(
-            set(db_orga.keys()),
-            set(["Files", "FieldRules", "ValuesMap"]),
-        )
-        self.assertEqual(db_orga["Files"].shape, (2, 20))
+        files_list, fields_rules, values_map = get_db_from_path(file_path, load_file_orga())
+        self.assertEqual(files_list.shape, (2, 20))
+        self.assertEqual(fields_rules.shape, (10, 15))
+        self.assertEqual(values_map.shape, (6, 3))
 
     def test_get_db_from_path_correct_csv(self):
         """Test missing sheet error."""
         file_path = os.path.join(self.test_data_path, "test1/orga.csv")
-        db_orga = get_db_from_path(file_path, load_file_orga())
-
-        self.assertEqual(
-            set(db_orga.keys()),
-            set(["Files", "FieldRules", "ValuesMap"]),
-        )
-        self.assertEqual(db_orga["Files"].shape, (4, 18))
-        self.assertEqual(db_orga["FieldRules"]["DelMatch"][5], ["delmatchitis", "othermatch"])
-        self.assertTrue(pd.isna(db_orga["FieldRules"]["SepPattern"].iloc[2]))
+        files_list, fields_rules, values_map = get_db_from_path(file_path, load_file_orga())
+        self.assertEqual(files_list.shape, (4, 18))
+        self.assertEqual(fields_rules.shape, (9, 14))
+        self.assertEqual(values_map.shape, (2, 3))
+        self.assertEqual(fields_rules["DelMatch"][5], "delmatchitis,othermatch")
+        self.assertTrue(pd.isna(fields_rules["SepPattern"].iloc[2]))
 
 
 class TestGetDBFromCSV(unittest.TestCase):
@@ -249,7 +240,17 @@ class TestGetDBFromCSV(unittest.TestCase):
         file_path = os.path.join(self.test_data_path, "wrong_orga.csv")
         with self.assertRaises(KeyError) as context:
             get_db_from_csv(file_path, {})
-        self.assertIn("Columns in", str(context.exception))
+        self.assertIn("should only contain 'file', 'path', 'sep'", str(context.exception))
+
+    def test_get_db_from_csv_wrong_values_in_files(self):
+        """Test wrong columns error."""
+        file_path = os.path.join(self.test_data_path, "wrong_orga_extra_file.csv")
+        with self.assertRaises(KeyError) as context:
+            get_db_from_csv(file_path, {})
+        self.assertIn(
+            "should only contain 'Files', 'FieldsRules', 'ValuesMap' no more no less",
+            str(context.exception),
+        )
 
     def test_get_db_from_csv_missing_files(self):
         """Test missing files error."""
@@ -260,12 +261,109 @@ class TestGetDBFromCSV(unittest.TestCase):
     def test_get_db_from_csv_correct(self):
         """Test correct file."""
         file_path = os.path.join(self.test_data_path, "test1/orga.csv")
-        db_orga = get_db_from_csv(file_path, load_file_orga())
-        self.assertEqual(
-            set(db_orga.keys()),
-            set(["Files", "FieldRules", "ValuesMap"]),
+        files_list, fields_rules, values_map = get_db_from_csv(file_path, load_file_orga())
+        self.assertEqual(files_list.shape, (4, 18))
+        self.assertEqual(fields_rules.shape, (9, 14))
+        self.assertEqual(values_map.shape, (2, 3))
+
+
+class TestGetDBFromPATH(unittest.TestCase):
+    """Check that the get_db_from_path function works as expected."""
+
+    def setUp(self):
+        """Set up test data path"""
+        self.test_data_path = os.path.join(os.path.dirname(__file__), "test_dataset")
+
+    def test_get_db_from_path_correct(self):
+        """Test should work."""
+        file_path = os.path.join(self.test_data_path, "RepTest_correct.xlsx")
+        files_list, fields_rules, values_map = get_db_from_path(file_path, load_file_orga())
+        self.assertEqual(files_list.shape, (2, 20))
+        self.assertEqual(fields_rules.shape, (10, 15))
+        self.assertEqual(values_map.shape, (6, 3))
+
+    def test_get_db_from_path_orga_wrong_db_format(self):
+        """Test wrong db_orga type."""
+        file_path = os.path.join(self.test_data_path, "RepTest_correct.xlsx")
+        with self.assertRaises(TypeError) as context:
+            get_db_from_path(file_path, [])
+        self.assertIn("The db_orga should be a dictionary", str(context.exception))
+
+    def test_get_db_from_path_orga_wrong_file_format(self):
+        """Test wrong file format."""
+        # From xlsx
+        file_path = os.path.join(self.test_data_path, "RepTest_correct.tsv")
+        with self.assertRaises(TypeError) as context:
+            get_db_from_path(file_path, load_file_orga())
+        self.assertIn("should be either an .xlsx, .xls, xlsm or a .csv", str(context.exception))
+
+
+class TestGetDBFrom(unittest.TestCase):
+    """Check that the get_db_from function works as expected."""
+
+    def setUp(self):
+        """Set up test data path"""
+        self.test_data_path = os.path.join(os.path.dirname(__file__), "test_dataset")
+
+    def test_get_db_from_wrong_columns(self):
+        """Test wrong columns error."""
+        file_path = os.path.join(self.test_data_path, "wrong_orga.csv")
+        with self.assertRaises(KeyError) as context:
+            get_db_from(path_orga=file_path)
+        self.assertIn("Columns in", str(context.exception))
+
+    def test_get_db_from_missing_files(self):
+        """Test missing files error."""
+        file_path = os.path.join(self.test_data_path, "missing.csv")
+        with self.assertRaises(FileNotFoundError):
+            get_db_from(path_orga=file_path)
+
+    def test_get_db_from_path_orga_not_alone(self):
+        """Test path_orga should be used alone."""
+        path_files = os.path.join(self.test_data_path, "test1/files.csv")
+        path_values_map = os.path.join(self.test_data_path, "test1/values_map.csv")
+        with self.assertRaises(ValueError) as context:
+            get_db_from(path_orga=path_files, path_values_map=path_values_map)
+        self.assertIn("--path-orga should be used alone.", str(context.exception))
+
+    def test_get_db_from_no_path_file(self):
+        """Test no path_files provided."""
+        path_values_map = os.path.join(self.test_data_path, "test1/values_map.csv")
+        with self.assertRaises(ValueError) as context:
+            get_db_from(path_values_map=path_values_map)
+        self.assertIn("--path-orga nor --path-files provided", str(context.exception))
+
+    def test_get_db_from_correct(self):
+        """Test correct file."""
+        # From CSV
+        file_path = os.path.join(self.test_data_path, "test1/orga.csv")
+        files_list, fields_rules, values_map = get_db_from(path_orga=file_path)
+        self.assertEqual(files_list.shape, (4, 18))
+        self.assertEqual(fields_rules.shape, (9, 14))
+        self.assertEqual(values_map.shape, (2, 3))
+        self.assertEqual(fields_rules["DelMatch"][5], ["delmatchitis", "othermatch"])
+        self.assertTrue(pd.isna(fields_rules["SepPattern"].iloc[2]))
+
+        # From xlsx
+        file_path = os.path.join(self.test_data_path, "RepTest_correct.xlsx")
+        files_list, fields_rules, values_map = get_db_from(file_path)
+        self.assertEqual(files_list.shape, (2, 20))
+        self.assertEqual(fields_rules.shape, (10, 15))
+        self.assertEqual(values_map.shape, (6, 3))
+
+        # From multiple CSV
+        path_files = os.path.join(self.test_data_path, "test1/files.csv")
+        path_fields_rules = os.path.join(self.test_data_path, "test1/fields_rules.csv")
+        path_values_map = os.path.join(self.test_data_path, "test1/values_map.csv")
+        files_list, fields_rules, values_map = get_db_from(
+            path_files=path_files,
+            path_fields_rules=path_fields_rules,
+            path_values_map=path_values_map,
+            sep=";",
         )
-        self.assertEqual(db_orga["Files"].shape, (4, 18))
+        self.assertEqual(files_list.shape, (4, 18))
+        self.assertEqual(fields_rules.shape, (9, 14))
+        self.assertEqual(values_map.shape, (2, 3))
 
 
 if __name__ == "__main__":
