@@ -1,0 +1,496 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><link rel="canonical" href="https://louislenezet.github.io/files2db/normalisation/" />
+      <link rel="shortcut icon" href="../img/favicon.ico" />
+    <title>Normalisation - files2db</title>
+    <link rel="stylesheet" href="../css/theme.css" />
+    <link rel="stylesheet" href="../css/theme_extra.css" />
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/styles/github.min.css" />
+        <link href="../assets/_mkdocstrings.css" rel="stylesheet" />
+        <link href="../stylesheets/extra.css" rel="stylesheet" />
+    
+      <script>
+        // Current page data
+        var mkdocs_page_name = "Normalisation";
+        var mkdocs_page_input_path = "normalisation.md";
+        var mkdocs_page_url = "/files2db/normalisation/";
+      </script>
+    
+    <!--[if lt IE 9]>
+      <script src="../js/html5shiv.min.js"></script>
+    <![endif]-->
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/highlight.min.js"></script>
+      <script>hljs.highlightAll();</script> 
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side stickynav">
+    <div class="wy-side-scroll">
+      <div class="wy-side-nav-search">
+          <a href="..">
+          <img src="../assets/logo_files2db.svg" class="logo" alt="Logo"/>
+        </a><div role="search">
+  <form id ="rtd-search-form" class="wy-form" action="../search.html" method="get">
+      <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" title="Type search term here" />
+  </form>
+</div>
+      </div>
+
+      <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="..">Home</a>
+                </li>
+              </ul>
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="../quickstart/">Quickstart</a>
+                </li>
+              </ul>
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="../cli/">CLI</a>
+                </li>
+              </ul>
+              <ul class="current">
+                <li class="toctree-l1 current"><a class="reference internal current" href="#">Normalisation</a>
+    <ul class="current">
+    <li class="toctree-l2"><a class="reference internal" href="#normalisation-steps">Normalisation steps</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#normalisation-rules">Normalisation rules</a>
+        <ul>
+    <li class="toctree-l3"><a class="reference internal" href="#separate-modalities">Separate modalities</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#clean-the-field">Clean the field</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#convert-data-type">Convert data type</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#value-mapping">Value mapping</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#validate-values">Validate values</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#split-fields">Split fields</a>
+        <ul>
+    <li class="toctree-l4"><a class="reference internal" href="#simple-example">Simple example</a>
+    </li>
+    <li class="toctree-l4"><a class="reference internal" href="#more-complex-example">More complex example</a>
+    </li>
+        </ul>
+    </li>
+        </ul>
+    </li>
+    </ul>
+                </li>
+              </ul>
+              <ul>
+                <li class="toctree-l1"><a class="" href="https://github.com/louislenezet/files2db/issues">Issue Tracker</a>
+                </li>
+              </ul>
+      </div>
+    </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+      <nav class="wy-nav-top" role="navigation" aria-label="Mobile navigation menu">
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="..">files2db</a>
+        
+      </nav>
+      <div class="wy-nav-content">
+        <div class="rst-content"><div role="navigation" aria-label="breadcrumbs navigation">
+  <ul class="wy-breadcrumbs">
+    <li><a href=".." class="icon icon-home" aria-label="Docs"></a></li>
+      <li class="breadcrumb-item active">Normalisation</li>
+    <li class="wy-breadcrumbs-aside">
+          <a href="https://github.com/louislenezet/files2db/edit/master/docs/normalisation.md" class="icon icon-github"> Edit on GitHub</a>
+    </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+            <div class="section" itemprop="articleBody">
+              
+                <h1 id="normalisation">Normalisation<a class="headerlink" href="#normalisation" title="Permanent link">&para;</a></h1>
+<h2 id="normalisation-steps">Normalisation steps<a class="headerlink" href="#normalisation-steps" title="Permanent link">&para;</a></h2>
+<p>After aggregating all input files, <em>files2db</em> applies a series of normalisation rules when the <code>--normalize</code> option is enabled.
+The rules are defined in the <em>FieldsRules</em> table and are applied sequentially to each field.</p>
+<p>These steps are applied in the following order:</p>
+<ol>
+<li>Drop all only NA values rows and columns</li>
+<li>Remove all ascii characters and encode data in UTF-8</li>
+<li>Process each field defined in <em>FieldsRules</em>:</li>
+<li><a href="#separate-modalities">Split values (<code>Sep</code>)</a></li>
+<li><a href="#clean-the-field">Clean values (<code>DelMatch</code>, <code>DelIn</code>, <code>DelStart</code>, <code>DelEnd</code> and <code>StripFrom</code>)</a></li>
+<li><a href="#convert-data-type">Convert data type (<code>DataType</code>)</a></li>
+<li><a href="#value-mapping">Apply value mappings with <em>ValuesMap</em> table</a></li>
+<li><a href="#validate-values">Validate values</a></li>
+<li><a href="#split-fields">Split fields (<code>SepPattern</code>)</a></li>
+</ol>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>Fields are processed in the order in which they appear in the <strong>FieldsRules</strong> table.
+This can affect the result when multiple rules interact.</p>
+</div>
+<div class="admonition important">
+<p class="admonition-title">Important</p>
+<p>The rules are applied sequentially, meaning that the output of one rule will be the input for the next rule.</p>
+</div>
+<h2 id="normalisation-rules">Normalisation rules<a class="headerlink" href="#normalisation-rules" title="Permanent link">&para;</a></h2>
+<h3 id="separate-modalities">Separate modalities<a class="headerlink" href="#separate-modalities" title="Permanent link">&para;</a></h3>
+<p>This step allows to split multiple values in a field using the specified separator.</p>
+<p>With <em>Sep</em> as <code>;</code></p>
+<div class="table-center">
+<table class="docutils">
+  <thead>
+    <tr>
+      <th colspan="1">Before</th>
+      <th colspan="3">After</th>
+    </tr>
+    <tr>
+      <th>MyField</th>
+      <th>MyField_1</th>
+      <th>MyField_2</th>
+      <th>MyField_3</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>A;B;C</td>
+      <td>A</td>
+      <td>B</td>
+      <td>C</td>
+    </tr>
+  </tbody>
+</table>
+</div>
+
+<div class="admonition warning">
+<p class="admonition-title">Warning</p>
+<p>The separator cannot be a comma (<code>,</code>) as it is used to split the modalities in the <em>FieldsRules</em> table.</p>
+</div>
+<h3 id="clean-the-field">Clean the field<a class="headerlink" href="#clean-the-field" title="Permanent link">&para;</a></h3>
+<p>This step allows to clean the field using regular expression patterns and is case sensitive.</p>
+<ul>
+<li><em>DelMatch</em>: remove values that completely match the pattern</li>
+<li><em>DelIn</em>: remove every occurrence of the pattern within the value</li>
+<li><em>DelStart</em>: remove the pattern when it occurs at the beginning of the value</li>
+<li><em>DelEnd</em>: remove the pattern when it occurs at the end of the value</li>
+<li><em>StripFrom</em>: remove the pattern and everything that follows it</li>
+</ul>
+<p>With <code>{pattern}</code> as <code>A</code>:</p>
+<div class="table-center">
+<table class="docutils">
+  <thead>
+    <tr>
+      <th>Type</th>
+      <th>Regex equivalent</th>
+      <th>A</th>
+      <th>AA</th>
+      <th>AB</th>
+      <th>BA</th>
+      <th>BAC</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td><em>DelMatch</em></td>
+      <td><code>^{pattern}$</code></td>
+      <td></td>
+      <td>AA</td>
+      <td>AB</td>
+      <td>BA</td>
+      <td>BAC</td>
+    </tr>
+    <tr>
+      <td><em>DelIn</em></td>
+      <td><code>{pattern}</code></td>
+      <td></td>
+      <td></td>
+      <td>B</td>
+      <td>B</td>
+      <td>BC</td>
+    </tr>
+    <tr>
+      <td><em>DelStart</em></td>
+      <td><code>^{pattern}</code></td>
+      <td></td>
+      <td>A</td>
+      <td>B</td>
+      <td>BA</td>
+      <td>BAC</td>
+    </tr>
+    <tr>
+      <td><em>DelEnd</em></td>
+      <td><code>{pattern}$</code></td>
+      <td></td>
+      <td>A</td>
+      <td>AB</td>
+      <td>B</td>
+      <td>BAC</td>
+    </tr>
+    <tr>
+      <td><em>StripFrom</em></td>
+      <td><code>{pattern}.*$</code></td>
+      <td></td>
+      <td></td>
+      <td></td>
+      <td>B</td>
+      <td>B</td>
+    </tr>
+  </tbody>
+</table>
+</div>
+
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>For details on the regular expression syntax, please refer to the
+<a href="https://docs.python.org/3/library/re.html#re-syntax">Python documentation</a> and test them using
+the <a href="https://regex101.com/">regex101</a> website.</p>
+</div>
+<h3 id="convert-data-type">Convert data type<a class="headerlink" href="#convert-data-type" title="Permanent link">&para;</a></h3>
+<p>This step allows to convert the data type of the field to one of the following:</p>
+<ul>
+<li><code>lower</code>: string converted to lowercase</li>
+<li><code>UPPER</code>: string converted to uppercase</li>
+<li><code>Title</code>: string converted to title case (first letter of each word capitalized)</li>
+<li><code>date</code>: date in the format DD.MM.YYYY</li>
+<li><code>int</code>: integer number (e.g. <code>"1"</code> and <code>"1.2"</code> will become <code>1</code>)</li>
+<li><code>float</code>: floating-point number (e.g. <code>"1.2"</code> and <code>"1,2"</code> will become <code>1.2</code>)</li>
+<li><code>string</code>: remains a string</li>
+<li><code>bool</code>: boolean (e.g. case insensitive <code>"TRUE"</code>, <code>"1"</code> will become <code>True</code> while <code>"false"</code> and <code>0</code> will become <code>False</code>)</li>
+</ul>
+<h3 id="value-mapping">Value mapping<a class="headerlink" href="#value-mapping" title="Permanent link">&para;</a></h3>
+<p>This step allows to apply value mappings defined in the <em>ValuesMap</em> table.
+For each <code>Field</code>provided, the <code>OriginalValues</code> will be split by a comma (<code>,</code>) and each resulting
+modalities, if fully matched, will be replaced by the <code>NewValue</code>.</p>
+<p>With <em>ValuesMap</em> as:</p>
+<div class="table-center">
+<table class="docutils">
+  <thead>
+    <tr>
+      <th>Field</th>
+      <th>OriginalValues</th>
+      <th>NewValue</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>ColA</td>
+      <td>OldVal1,OldVal2</td>
+      <td>NewVal1</td>
+    </tr>
+    <tr>
+      <td>ColA</td>
+      <td>OldVal3</td>
+      <td>NewVal2</td>
+    </tr>
+    <tr>
+      <td>ColB</td>
+      <td>OldVal4</td>
+      <td>NewVal3</td>
+    </tr>
+  </tbody>
+</table>
+</div>
+
+<p>Then :</p>
+<div class="table-center">
+<table class="docutils">
+  <thead>
+    <tr>
+      <th colspan="2">Before</th>
+      <th colspan="2">After</th>
+    </tr>
+    <tr>
+      <th>ColA</th>
+      <th>ColB</th>
+      <th>ColA</th>
+      <th>ColB</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>OldVal1</td>
+      <td>OldVal4</td>
+      <td>NewVal1</td>
+      <td>NewVal3</td>
+    </tr>
+    <tr>
+      <td>OldVal3</td>
+      <td>OldVal5</td>
+      <td>NewVal2</td>
+      <td>OldVal5</td>
+    </tr>
+  </tbody>
+</table>
+</div>
+
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>Multiple mappings can be applied to the same field by defining multiple rows in the <em>ValuesMap</em> table with the same <em>FieldName</em>.</p>
+<p>Multiple values can be mapped to the same value by separating them with a comma in the <em>OriginalValues</em> column.</p>
+</div>
+<div class="admonition important">
+<p class="admonition-title">Important</p>
+<p>This step is case sensitive except if the field has been converted to lowercase in the previous step.</p>
+</div>
+<h3 id="validate-values">Validate values<a class="headerlink" href="#validate-values" title="Permanent link">&para;</a></h3>
+<p>This step allows to validate the field values using regular expression patterns.
+Values that do not match the pattern will generate an error in the error output file.</p>
+<p>There is two validation possible:</p>
+<ul>
+<li><code>Contains</code>: list of values separated by a comma (<code>,</code>). This test is case sensitive.</li>
+<li><code>Min</code> and <code>Max</code>: for numerical values only.</li>
+</ul>
+<h3 id="split-fields">Split fields<a class="headerlink" href="#split-fields" title="Permanent link">&para;</a></h3>
+<p>This step allows to split the field into multiple fields using a regular expression pattern as separator.
+This use named regex pattern to capture the new field.
+<code>SepPattern</code> has to be in the form <code>(?P&lt;NewFieldName&gt;{pattern})</code>, <code>KeepLink</code> is a boolean stating if the
+<code>NewFieldName</code> should be appended to the old <code>Field</code> or as a separate new field.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>For details on the regular expression syntax, please refer to the
+<a href="https://docs.python.org/3/library/re.html#re-syntax">Python documentation</a> and test them using
+the <a href="https://regex101.com/">regex101</a> website.</p>
+</div>
+<div class="admonition warning">
+<p class="admonition-title">Warning</p>
+<p>Only the first match of the pattern will be stored in the new field</p>
+</div>
+<h4 id="simple-example">Simple example<a class="headerlink" href="#simple-example" title="Permanent link">&para;</a></h4>
+<p>With <code>SepPattern</code> = <code>(?P&lt;Int&gt;\\d+)|(?P&lt;String&gt;[A-Za-z]+)</code></p>
+<div class="table-center">
+<table class="docutils">
+  <thead>
+    <tr>
+      <th colspan="1">Before</th>
+      <th colspan="4">After</th>
+    </tr>
+    <tr>
+      <th rowspan="2">MyField</th>
+      <th colspan="2">KeepLink = True</th>
+      <th colspan="2">KeepLink = False</th>
+    </tr>
+    <tr>
+      <th>MyField_Int</th>
+      <th>MyField_String</th>
+      <th>Int</th>
+      <th>String</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>1234ABCD</td>
+      <td>1234</td>
+      <td>ABCD</td>
+      <td>1234</td>
+      <td>ABCD</td>
+    </tr>
+    <tr>
+      <td>ABCD 1234</td>
+      <td>1234</td>
+      <td>ABCD</td>
+      <td>1234</td>
+      <td>ABCD</td>
+    </tr>
+    <tr>
+      <td>456 ABCD 1234</td>
+      <td>456</td>
+      <td>ABCD</td>
+      <td>456</td>
+      <td>ABCD</td>
+    </tr>
+  </tbody>
+</table>
+</div>
+
+<h4 id="more-complex-example">More complex example<a class="headerlink" href="#more-complex-example" title="Permanent link">&para;</a></h4>
+<p>A more complex example when you expect either 1 or 2 value, and if two then split it into left and right.</p>
+<p>With <code>SepPattern</code> = <code>((?P&lt;Left&gt;[A-E])(\/*)(?P&lt;Right&gt;[A-E]))|(?P&lt;Mono&gt;[A-E])</code></p>
+<div class="table-center">
+<table class="docutils">
+  <thead>
+    <tr>
+      <th colspan="1">Before</th>
+      <th colspan="3">After</th>
+    </tr>
+    <tr>
+      <th>MyField</th>
+      <th>Left</th>
+      <th>Right</th>
+      <th>Mono</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>A/B</td>
+      <td>A</td>
+      <td>B</td>
+      <td></td>
+    </tr>
+    <tr>
+      <td>BE</td>
+      <td>B</td>
+      <td>E</td>
+      <td></td>
+    </tr>
+    <tr>
+      <td>D</td>
+      <td></td>
+      <td></td>
+      <td>D</td>
+    </tr>
+  </tbody>
+</table>
+</div>
+              
+            </div>
+          </div><footer>
+    <div class="rst-footer-buttons" role="navigation" aria-label="Footer Navigation">
+        <a href="../cli/" class="btn btn-neutral float-left" title="CLI"><span class="icon icon-circle-arrow-left"></span> Previous</a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <!-- Copyright etc -->
+  </div>
+
+  Built with <a href="https://www.mkdocs.org/">MkDocs</a> using a <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>.
+</footer>
+          
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+
+  <div class="rst-versions" role="note" aria-label="Versions">
+  <span class="rst-current-version" data-toggle="rst-current-version">
+    
+        <span>
+          <a href="https://github.com/louislenezet/files2db" class="fa fa-github" style="color: #fcfcfc"> GitHub</a>
+        </span>
+    
+    
+      <span><a href="../cli/" style="color: #fcfcfc">&laquo; Previous</a></span>
+    
+    
+  </span>
+</div>
+    <script src="../js/jquery-3.6.0.min.js"></script>
+    <script>var base_url = "..";</script>
+    <script src="../js/theme_extra.js"></script>
+    <script src="../js/theme.js"></script>
+      <script src="../search/main.js"></script>
+    <script>
+        jQuery(function () {
+            SphinxRtdTheme.Navigation.enable(true);
+        });
+    </script>
+
+</body>
+</html>

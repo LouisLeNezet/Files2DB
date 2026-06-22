@@ -1,0 +1,14 @@
+.table-center {
+    display: flex;
+    justify-content: center;
+}
+
+table.docutils th,
+table.docutils td {
+    text-align: center;
+    vertical-align: middle;
+}
+
+table.docutils td {
+    color: #1d1d1d;
+}

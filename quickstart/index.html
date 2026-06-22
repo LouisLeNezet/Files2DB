@@ -1,0 +1,372 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><link rel="canonical" href="https://louislenezet.github.io/files2db/quickstart/" />
+      <link rel="shortcut icon" href="../img/favicon.ico" />
+    <title>Quickstart - files2db</title>
+    <link rel="stylesheet" href="../css/theme.css" />
+    <link rel="stylesheet" href="../css/theme_extra.css" />
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/styles/github.min.css" />
+        <link href="../assets/_mkdocstrings.css" rel="stylesheet" />
+        <link href="../stylesheets/extra.css" rel="stylesheet" />
+    
+      <script>
+        // Current page data
+        var mkdocs_page_name = "Quickstart";
+        var mkdocs_page_input_path = "quickstart.md";
+        var mkdocs_page_url = "/files2db/quickstart/";
+      </script>
+    
+    <!--[if lt IE 9]>
+      <script src="../js/html5shiv.min.js"></script>
+    <![endif]-->
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/highlight.min.js"></script>
+      <script>hljs.highlightAll();</script> 
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side stickynav">
+    <div class="wy-side-scroll">
+      <div class="wy-side-nav-search">
+          <a href="..">
+          <img src="../assets/logo_files2db.svg" class="logo" alt="Logo"/>
+        </a><div role="search">
+  <form id ="rtd-search-form" class="wy-form" action="../search.html" method="get">
+      <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" title="Type search term here" />
+  </form>
+</div>
+      </div>
+
+      <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="..">Home</a>
+                </li>
+              </ul>
+              <ul class="current">
+                <li class="toctree-l1 current"><a class="reference internal current" href="#">Quickstart</a>
+    <ul class="current">
+    <li class="toctree-l2"><a class="reference internal" href="#installation">Installation</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#table-that-you-will-need">Table that you will need</a>
+        <ul>
+    <li class="toctree-l3"><a class="reference internal" href="#files-table">Files table</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#fieldsrules-table">FieldsRules table</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#valuesmap-table">ValuesMap table</a>
+        <ul>
+    <li class="toctree-l4"><a class="reference internal" href="#explanation">Explanation:</a>
+    </li>
+        </ul>
+    </li>
+        </ul>
+    </li>
+    </ul>
+                </li>
+              </ul>
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="../cli/">CLI</a>
+                </li>
+              </ul>
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="../normalisation/">Normalisation</a>
+                </li>
+              </ul>
+              <ul>
+                <li class="toctree-l1"><a class="" href="https://github.com/louislenezet/files2db/issues">Issue Tracker</a>
+                </li>
+              </ul>
+      </div>
+    </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+      <nav class="wy-nav-top" role="navigation" aria-label="Mobile navigation menu">
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="..">files2db</a>
+        
+      </nav>
+      <div class="wy-nav-content">
+        <div class="rst-content"><div role="navigation" aria-label="breadcrumbs navigation">
+  <ul class="wy-breadcrumbs">
+    <li><a href=".." class="icon icon-home" aria-label="Docs"></a></li>
+      <li class="breadcrumb-item active">Quickstart</li>
+    <li class="wy-breadcrumbs-aside">
+          <a href="https://github.com/louislenezet/files2db/edit/master/docs/quickstart.md" class="icon icon-github"> Edit on GitHub</a>
+    </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+            <div class="section" itemprop="articleBody">
+              
+                <h1 id="quickstart">Quickstart<a class="headerlink" href="#quickstart" title="Permanent link">&para;</a></h1>
+<h2 id="installation">Installation<a class="headerlink" href="#installation" title="Permanent link">&para;</a></h2>
+<p><em>files2db</em> is available on conda-forge, so you can install it with the following command:</p>
+<pre><code class="language-bash">conda install -c conda-forge files2db
+</code></pre>
+<h2 id="table-that-you-will-need">Table that you will need<a class="headerlink" href="#table-that-you-will-need" title="Permanent link">&para;</a></h2>
+<p>One excel file with 3 sheets named: <em>Files</em>, <em>FieldsRules</em>, <em>ValuesMap</em>, or 3 different CSV files.</p>
+<p>The columns expected for each of these files are the following, but you can find template for each of them in the <a href="https://github.com/LouisLeNezet/files2db/tree/main/docs/assets">assets folder</a>.</p>
+<h3 id="files-table"><em>Files</em> table<a class="headerlink" href="#files-table" title="Permanent link">&para;</a></h3>
+<p>This table contains the path to each file to aggregate to the database, with information on how to read the data.
+You therefore need the following columns:</p>
+<ul>
+<li><code>FilePath</code>: the absolute path to the file</li>
+<li><code>SheetName</code>: the sheet name in case of an Excel file</li>
+<li><code>Separator</code>: character used to separate the columns (e.g. <code>;</code>, <code>\t</code>, <code></code>), needed for plain text files (e.g. <code>.csv</code>, <code>.txt</code>, <code>.tsv</code>) (Note: <code>,</code> cannot be used as it is used to split the modalities in the <em>FieldsRules</em> table)</li>
+<li><code>Header</code>: the line number where the column names are written</li>
+<li><code>LineStart</code>: the starting line of the data</li>
+<li><code>LineEnd</code>: the ending line of the data</li>
+<li><code>ColStart</code>: the starting column of the data</li>
+<li><code>ColEnd</code>: the ending column of the data</li>
+<li><code>ToAdd</code>: a true/false value telling if this file should be aggregated or not</li>
+<li><code>AsCorrection</code>: a true/false value telling if this file is a special file to be used for data correction</li>
+<li><code>meta_*</code>: any column starting with <code>meta_</code> will be added as an additional value for each row of the file.</li>
+</ul>
+<table>
+<thead>
+<tr>
+<th style="text-align: left;">FilePath</th>
+<th style="text-align: left;">SheetName</th>
+<th style="text-align: left;">Separator</th>
+<th style="text-align: right;">Header</th>
+<th style="text-align: right;">LineStart</th>
+<th style="text-align: right;">LineEnd</th>
+<th style="text-align: left;">ColStart</th>
+<th style="text-align: left;">ColEnd</th>
+<th style="text-align: right;">ToAdd</th>
+<th style="text-align: left;">AsCorrection</th>
+<th style="text-align: left;">meta_DateFileCreation</th>
+<th style="text-align: left;">meta_ColE</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align: left;">test_dataset/test1/fileA.xlsx</td>
+<td style="text-align: left;">Feuil1</td>
+<td style="text-align: left;"></td>
+<td style="text-align: right;">3</td>
+<td style="text-align: right;">5</td>
+<td style="text-align: right;">6</td>
+<td style="text-align: left;">C</td>
+<td style="text-align: left;">E</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: left;"></td>
+<td style="text-align: left;">2021-12-01</td>
+<td style="text-align: left;"></td>
+</tr>
+<tr>
+<td style="text-align: left;">test_dataset/test1/fileB.csv</td>
+<td style="text-align: left;"></td>
+<td style="text-align: left;"></td>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">2</td>
+<td style="text-align: right;">3</td>
+<td style="text-align: left;">A</td>
+<td style="text-align: left;">C</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: left;"></td>
+<td style="text-align: left;">2024.02.01</td>
+<td style="text-align: left;">MetaNewValue</td>
+</tr>
+<tr>
+<td style="text-align: left;">test_dataset/test1/fileC.csv</td>
+<td style="text-align: left;"></td>
+<td style="text-align: left;">;</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">2</td>
+<td style="text-align: right;">4</td>
+<td style="text-align: left;">A</td>
+<td style="text-align: left;">E</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: left;">true</td>
+<td style="text-align: left;">2022.01.10</td>
+<td style="text-align: left;">MetaOldValue</td>
+</tr>
+</tbody>
+</table>
+<h3 id="fieldsrules-table"><em>FieldsRules</em> table<a class="headerlink" href="#fieldsrules-table" title="Permanent link">&para;</a></h3>
+<p>This table contains the different rules needed to normalize each variable in the aggregated data.
+More information on the different rules can be found in the <a href="https://louislenezet.github.io/files2db/normalisation/">documentation</a>.</p>
+<ul>
+<li><code>Field</code>: name of the field to normalize</li>
+<li><code>Category</code>: name of the field category</li>
+<li><code>Sep</code>: character used to separate the modalities in the field (e.g. <code>,</code>, <code>;</code>, <code>\t</code>, <code></code>)</li>
+<li><code>SepPattern</code>: regular expression pattern to separate the modalities in the field</li>
+<li><code>KeepLink</code>: a boolean value telling if the link to the original data should be kept after separating the modalities in the field</li>
+<li><code>DelMatch</code>: a regular expression pattern to delete in the field (fully match)</li>
+<li><code>DelEnd</code>: a regular expression pattern to delete at the end of the field</li>
+<li><code>DelIn</code>: a regular expression pattern to delete in the field (partially match)</li>
+<li><code>DelStart</code>: a regular expression pattern to delete at the start of the field</li>
+<li><code>StripFrom</code>: a regular expression pattern to strip from the field (fully match)</li>
+<li><code>DataType</code>: the data type to assign to the field (e.g. <code>str</code>, <code>int</code>, <code>float</code>, <code>date</code>)</li>
+<li><code>Contains</code>: a regular expression pattern to check if the field contains a specific value</li>
+<li><code>Min</code>: the minimum value for the field (if applicable)</li>
+<li><code>Max</code>: the maximum value for the field (if applicable)</li>
+</ul>
+<table>
+<thead>
+<tr>
+<th style="text-align: left;">Field</th>
+<th style="text-align: left;">Category</th>
+<th style="text-align: left;">Sep</th>
+<th style="text-align: left;">DelMatch</th>
+<th style="text-align: left;">DelIn</th>
+<th style="text-align: left;">DelStart</th>
+<th style="text-align: left;">DelEnd</th>
+<th style="text-align: left;">StripFrom</th>
+<th style="text-align: left;">DataType</th>
+<th style="text-align: left;">Contains</th>
+<th style="text-align: right;">Min</th>
+<th style="text-align: right;">Max</th>
+<th style="text-align: left;">SepPattern</th>
+<th style="text-align: left;">KeepLink</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align: left;">ColA</td>
+<td style="text-align: left;">ID</td>
+<td style="text-align: left;">or</td>
+<td style="text-align: left;">NA</td>
+<td style="text-align: left;"></td>
+<td style="text-align: left;"></td>
+<td style="text-align: left;"></td>
+<td style="text-align: left;"></td>
+<td style="text-align: left;">int</td>
+<td style="text-align: left;">int</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">4</td>
+<td style="text-align: left;"></td>
+<td style="text-align: left;"></td>
+</tr>
+<tr>
+<td style="text-align: left;">ColC</td>
+<td style="text-align: left;">Infos</td>
+<td style="text-align: left;">_</td>
+<td style="text-align: left;">WRONG</td>
+<td style="text-align: left;">prefix</td>
+<td style="text-align: left;"></td>
+<td style="text-align: left;">suffix</td>
+<td style="text-align: left;">other</td>
+<td style="text-align: left;">string</td>
+<td style="text-align: left;"></td>
+<td style="text-align: right;"></td>
+<td style="text-align: right;"></td>
+<td style="text-align: left;">(?P<ColA>\d+)|(?P<ColC>[A-Za-z]+)</td>
+<td style="text-align: left;">False</td>
+</tr>
+<tr>
+<td style="text-align: left;">DateFileCreation</td>
+<td style="text-align: left;">Other</td>
+<td style="text-align: left;"></td>
+<td style="text-align: left;">???,00</td>
+<td style="text-align: left;"></td>
+<td style="text-align: left;"></td>
+<td style="text-align: left;"></td>
+<td style="text-align: left;"></td>
+<td style="text-align: left;">date</td>
+<td style="text-align: left;">date</td>
+<td style="text-align: right;"></td>
+<td style="text-align: right;"></td>
+<td style="text-align: left;"></td>
+<td style="text-align: left;"></td>
+</tr>
+</tbody>
+</table>
+<h3 id="valuesmap-table"><em>ValuesMap</em> table<a class="headerlink" href="#valuesmap-table" title="Permanent link">&para;</a></h3>
+<p>This table contains modalities correspondance for each field</p>
+<ul>
+<li><code>Field</code>: name of the field to normalize</li>
+<li><code>OriginalValues</code>: modalities list to modify separated by a <code>,</code></li>
+<li><code>NewValue</code>: new value to assign to each modality listed in <code>OriginalValue</code></li>
+</ul>
+<table>
+<thead>
+<tr>
+<th style="text-align: left;">Field</th>
+<th style="text-align: left;">OriginalValues</th>
+<th style="text-align: left;">NewValue</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align: left;">ValueToMap</td>
+<td style="text-align: left;">A,otherA</td>
+<td style="text-align: left;">MyA</td>
+</tr>
+<tr>
+<td style="text-align: left;">ValueToMap</td>
+<td style="text-align: left;">B</td>
+<td style="text-align: left;">MyB</td>
+</tr>
+<tr>
+<td style="text-align: left;">ValueToMap2</td>
+<td style="text-align: left;">A,B,1</td>
+<td style="text-align: left;">AB1</td>
+</tr>
+</tbody>
+</table>
+<h4 id="explanation">Explanation:<a class="headerlink" href="#explanation" title="Permanent link">&para;</a></h4>
+<ul>
+<li>values <code>A</code> and <code>otherA</code> in field <code>ValueToMap</code> will be modify as <code>MyA</code></li>
+<li>values <code>B</code> in field <code>ValueToMap</code> will be modify as <code>MyB</code></li>
+<li>values <code>A</code>, <code>B</code> and <code>1</code> in field <code>ValueToMap2</code> will be modify as <code>AB1</code></li>
+</ul>
+              
+            </div>
+          </div><footer>
+    <div class="rst-footer-buttons" role="navigation" aria-label="Footer Navigation">
+        <a href=".." class="btn btn-neutral float-left" title="Home"><span class="icon icon-circle-arrow-left"></span> Previous</a>
+        <a href="../cli/" class="btn btn-neutral float-right" title="CLI">Next <span class="icon icon-circle-arrow-right"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <!-- Copyright etc -->
+  </div>
+
+  Built with <a href="https://www.mkdocs.org/">MkDocs</a> using a <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>.
+</footer>
+          
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+
+  <div class="rst-versions" role="note" aria-label="Versions">
+  <span class="rst-current-version" data-toggle="rst-current-version">
+    
+        <span>
+          <a href="https://github.com/louislenezet/files2db" class="fa fa-github" style="color: #fcfcfc"> GitHub</a>
+        </span>
+    
+    
+      <span><a href=".." style="color: #fcfcfc">&laquo; Previous</a></span>
+    
+    
+      <span><a href="../cli/" style="color: #fcfcfc">Next &raquo;</a></span>
+    
+  </span>
+</div>
+    <script src="../js/jquery-3.6.0.min.js"></script>
+    <script>var base_url = "..";</script>
+    <script src="../js/theme_extra.js"></script>
+    <script src="../js/theme.js"></script>
+      <script src="../search/main.js"></script>
+    <script>
+        jQuery(function () {
+            SphinxRtdTheme.Navigation.enable(true);
+        });
+    </script>
+
+</body>
+</html>

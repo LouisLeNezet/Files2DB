@@ -1,0 +1,4 @@
+﻿Field;OriginalValues;NewValue
+ValueToMap;A,otherA;MyA
+ValueToMap;B;MyB
+ValueToMap2;A,B,1;AB1
